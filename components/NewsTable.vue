@@ -24,7 +24,7 @@
 import { Vue, Component } from "nuxt-property-decorator";
 @Component
 export default class NewsTable extends Vue {}
-</script>#
+</script>
 
 <style>
 .news-table {
