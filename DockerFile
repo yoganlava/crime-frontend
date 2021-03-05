@@ -1,6 +1,8 @@
 FROM node:12.15.0
 
-RUN ls
+WORKDIR /usr/src/app
+
+COPY . .
 
 RUN npm i
 
