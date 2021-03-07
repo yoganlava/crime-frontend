@@ -7,7 +7,9 @@
     <div class="app-body">
       <floating-search></floating-search>
       <map-container></map-container>
+      
       <div class="news">
+        <button @click="test"> test </button>
         <div class="news-header">
           <h1 class="news-title">Live news</h1>
           <button
@@ -47,7 +49,13 @@ import { Vue, Component } from "nuxt-property-decorator";
     NewsTable: () => import("~/components/NewsTable.vue")
   }
 })
-export default class Index extends Vue {}
+export default class Index extends Vue {
+
+  async test() {
+    console.log(await this.$http.$get("https://unpkg.com/nuxt/package.json"));
+  }
+
+}
 </script>
 
 <style>
