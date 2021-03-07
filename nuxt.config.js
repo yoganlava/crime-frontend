@@ -44,6 +44,10 @@ export default {
     // Axios module configuration: https://go.nuxtjs.dev/config-axios
     axios: {},
 
+    proxy: {
+        '/api/': "https://crime-spotter-backend.herokuapp.com/"
+    },
+
     // Build Configuration: https://go.nuxtjs.dev/config-build
     build: {},
 
