@@ -10,8 +10,17 @@
 </template>
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
+
+interface LMap extends Element {
+  mapObject: L.Map
+}
+
 @Component
 export default class MapContainer extends Vue {
+  $refs!: {
+    map: LMap
+  }
+
   async mounted() {
     let geoInfo = await this.$http.$get("/external/ip");
     this.panMapTo([geoInfo.lat, geoInfo.lon]);
