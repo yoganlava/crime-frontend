@@ -20,6 +20,7 @@ interface LMap extends Element {
 export default class MapContainer extends Vue {
   @Prop() ip: string;
   lastLayer: L.Polygon | L.Rectangle;
+  markerGroup: L.LayerGroup;
 
   $refs!: {
     map: LMap;
@@ -27,8 +28,8 @@ export default class MapContainer extends Vue {
 
   async mounted() {
     let geoInfo = await this.$http.$get(`/external/ip/${this.ip}`);
+    this.markerGroup = this.$L.layerGroup().addTo(this.getMap());
     this.panMapTo([geoInfo.lat, geoInfo.lon]);
-    this.addMarker([geoInfo.lat, geoInfo.lon]);
     this.$refs.map.mapObject.pm.addControls({
       position: "topleft",
       drawCircle: false,
@@ -38,29 +39,48 @@ export default class MapContainer extends Vue {
       cutPolygon: false
     });
 
-    this.$refs.map.mapObject.on('pm:create', this.removeLastLayer);
+    this.$refs.map.mapObject.on("pm:create", this.removeLastLayer);
   }
 
-  removeLastLayer(e) {
-    if (this.lastLayer != undefined) this.$refs.map.mapObject.removeLayer(this.lastLayer)
+  async removeLastLayer(e) {
+    if (this.lastLayer != undefined)
+      this.$refs.map.mapObject.removeLayer(this.lastLayer);
     this.lastLayer = e.layer;
+    await this.markCrimesInLayer(this.lastLayer);
+  }
+
+  async markCrimesInLayer(layer: L.Polygon | L.Rectangle) {
+    let crimes: Array<any> = await this.$http.$get(
+      `https://data.police.uk/api/crimes-street/all-crime?poly=${this.getPolygonCoords().join(
+        ":"
+      )}`
+    );
+    console.log(crimes);
+    this.markerGroup.clearLayers();
+    crimes.forEach(crime => {
+      this.addMarker([crime.location.latitude, crime.location.longitude], crime.category);
+    });
+
   }
 
   getPolygonCoords() {
-    return this.lastLayer.getLatLngs();
+    return (this.lastLayer.getLatLngs()[0] as Array<{
+      lat;
+      lng;
+    }>).map(latlng => [latlng.lat, latlng.lng]);
   }
+
+  getMap = () => this.$refs.map.mapObject;
 
   panMapTo(coords) {
-    this.$refs.map.mapObject.panTo(coords);
+    this.getMap().panTo(coords);
   }
 
-  addMarker(coords) {
-    this.$L.marker(coords).addTo(this.$refs.map.mapObject);
+  addMarker(coords, text) {
+    this.$L.marker(coords, {
+      title: text,
+    }).bindPopup(text).addTo(this.markerGroup);
   }
-
-  enableEditMode() {}
-
-  disableEditMode() {}
 }
 </script>
 
