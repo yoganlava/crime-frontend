@@ -1,0 +1,84 @@
+diff --git a/node_modules/nuxt-leaflet/index.d.ts b/node_modules/nuxt-leaflet/index.d.ts
+index 584641f..0fa791e 100644
+--- a/node_modules/nuxt-leaflet/index.d.ts
++++ b/node_modules/nuxt-leaflet/index.d.ts
+@@ -1,5 +1,4 @@
+ import * as L from "leaflet";
+-
+ declare module "vue/types/vue" {
+   interface Vue {
+     $L: typeof L;
+diff --git a/node_modules/nuxt-leaflet/lib/module.js b/node_modules/nuxt-leaflet/lib/module.js
+index ca2a941..c1c181b 100644
+--- a/node_modules/nuxt-leaflet/lib/module.js
++++ b/node_modules/nuxt-leaflet/lib/module.js
+@@ -1,15 +1,15 @@
+ const { resolve } = require('path')
+ 
+-module.exports = async function module (moduleOptions) {
+-  const options = Object.assign({}, moduleOptions)
++module.exports = async function module(moduleOptions) {
++    const options = Object.assign({}, moduleOptions)
+ 
+-  // Add leaflet css
+-  this.options.css.push('leaflet/dist/leaflet.css')
++    // Add leaflet css
++    this.options.css.push('leaflet/dist/leaflet.css')
+ 
+-  this.addPlugin({
+-    src: resolve(__dirname, 'templates/plugin.js'),
+-    fileName: 'nuxt-leaflet.js',
+-    ssr: false,
+-    options
+-  })
++    this.addPlugin({
++        src: resolve(__dirname, 'templates/plugin.js'),
++        fileName: 'nuxt-leaflet.js',
++        ssr: false,
++        options
++    })
+ }
+\ No newline at end of file
+diff --git a/node_modules/nuxt-leaflet/lib/templates/plugin.js b/node_modules/nuxt-leaflet/lib/templates/plugin.js
+index e4de730..220f6c2 100644
+--- a/node_modules/nuxt-leaflet/lib/templates/plugin.js
++++ b/node_modules/nuxt-leaflet/lib/templates/plugin.js
+@@ -1,5 +1,7 @@
+ import Vue from 'vue'
+ import * as Vue2Leaflet from 'vue2-leaflet'
++import "@geoman-io/leaflet-geoman-free"
++
+ 
+ Vue.component('l-circle', Vue2Leaflet.LCircle)
+ Vue.component('l-circle-marker', Vue2Leaflet.LCircleMarker)
+@@ -28,21 +30,21 @@ Vue.component('l-lwms-tile-layer', Vue2Leaflet.LWMSTileLayer)
+ delete L.Icon.Default.prototype._getIconUrl
+ L.Icon.Default.imagePath = ''
+ L.Icon.Default.mergeOptions({
+-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+-  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
++    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
++    iconUrl: require('leaflet/dist/images/marker-icon.png'),
++    shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+ })
+ 
+ const LeafletPlugin = {
+-  install(Vue, options) {
+-    // Expose Leaflet
+-    Vue.prototype.$L = L;
+-  }
++    install(Vue, options) {
++        // Expose Leaflet
++        Vue.prototype.$L = L;
++    }
+ };
+ 
+ Vue.use(LeafletPlugin)
+ 
+-export default async function ({ router, store }) {
++export default async function({ router, store }) {
+ 
+ 
+ }
+\ No newline at end of file

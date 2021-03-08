@@ -3,7 +3,6 @@
     <div class="app-body">
       <floating-search></floating-search>
       <map-container :ip="ip"></map-container>
-
       <div class="news">
         <div class="news-header">
           <h1 class="news-title">Live news</h1>
@@ -33,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component} from "nuxt-property-decorator";
+import { Vue, Component } from "nuxt-property-decorator";
 
 @Component({
   components: {

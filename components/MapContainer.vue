@@ -1,25 +1,24 @@
 <template>
   <div class="map-container">
-    <!-- <h1>MAP HERE</h1> -->
-    <no-ssr>
+    <client-only>
       <l-map ref="map" :zoom="13" :center="[55.9464418, 8.1277591]">
         <l-tile-layer
           url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
         ></l-tile-layer>
       </l-map>
-    </no-ssr>
+    </client-only>
   </div>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from "nuxt-property-decorator";
-
+// import PM from "@geoman-io/leaflet-geoman-free";
 interface LMap extends Element {
   mapObject: L.Map;
 }
 
 @Component
 export default class MapContainer extends Vue {
-  @Prop() ip: string
+  @Prop() ip: string;
 
   $refs!: {
     map: LMap;
@@ -29,6 +28,14 @@ export default class MapContainer extends Vue {
     let geoInfo = await this.$http.$get(`/external/ip/${this.ip}`);
     this.panMapTo([geoInfo.lat, geoInfo.lon]);
     this.addMarker([geoInfo.lat, geoInfo.lon]);
+    this.$refs.map.mapObject.pm.addControls({
+      position: "topleft",
+      drawCircle: false,
+      drawPolyline: false,
+      drawMarker: false,
+      drawCircleMarker: false,
+      cutPolygon: false
+    });
   }
 
   panMapTo(coords) {
@@ -46,6 +53,8 @@ export default class MapContainer extends Vue {
 </script>
 
 <style>
+@import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+
 .map-container {
   z-index: 0;
   flex-basis: 100%;

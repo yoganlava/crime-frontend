@@ -1,0 +1,12 @@
+diff --git a/node_modules/@types/leaflet/index.d.ts b/node_modules/@types/leaflet/index.d.ts
+index d9133ef..3295389 100644
+--- a/node_modules/@types/leaflet/index.d.ts
++++ b/node_modules/@types/leaflet/index.d.ts
+@@ -1793,6 +1793,7 @@ export class Map extends Evented {
+     tap?: Handler;
+     touchZoom: Handler;
+     zoomControl: Control.Zoom;
++    pm: any;
+ 
+     options: MapOptions;
+ }
