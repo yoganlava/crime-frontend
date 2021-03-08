@@ -39,7 +39,9 @@ export default {
 
     // Modules: https://go.nuxtjs.dev/config-modules
     modules: [
-        '@nuxt/http'
+        '@nuxt/http',
+        '@nuxtjs/proxy',
+        'nuxt-leaflet'
     ],
 
     http: {
@@ -47,7 +49,8 @@ export default {
     },
 
     proxy: {
-        '/api/': "https://crime-spotter-backend.herokuapp.com/"
+        '/api': "https://crime-spotter-backend.herokuapp.com/",
+        '/external/ip': { target: "http://ip-api.com/json/?fields=61439", pathRewrite: { '^/external/ip': '' } }
     },
 
     // Build Configuration: https://go.nuxtjs.dev/config-build

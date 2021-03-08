@@ -1,15 +1,12 @@
 <template>
-  <!-- <nav class="bg-grey-800">
-  </nav> -->
-
   <div>
-    <nav-bar></nav-bar>
     <div class="app-body">
       <floating-search></floating-search>
-      <map-container></map-container>
-      
+      <map-container id="map">
+        
+      </map-container>
+
       <div class="news">
-        <button @click="test"> test </button>
         <div class="news-header">
           <h1 class="news-title">Live news</h1>
           <button
@@ -21,7 +18,6 @@
               viewBox="0 0 20 20"
             >
               <path
-
                 fill-rule="evenodd"
                 d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
                 clip-rule="evenodd"
@@ -50,11 +46,6 @@ import { Vue, Component } from "nuxt-property-decorator";
   }
 })
 export default class Index extends Vue {
-
-  async test() {
-    console.log(await this.$http.$get("https://unpkg.com/nuxt/package.json"));
-  }
-
 }
 </script>
 

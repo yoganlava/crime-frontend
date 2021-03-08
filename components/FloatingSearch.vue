@@ -36,6 +36,7 @@ export default class FloatingSearch extends Vue {}
 
 <style>
 .search-container {
+  z-index: 1;
   position: absolute;
   left: 50%;
   top: 15%;

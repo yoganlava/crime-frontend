@@ -16,6 +16,7 @@
         "@nuxtjs/proxy": "^2.1.0",
         "core-js": "^3.8.3",
         "nuxt": "^2.14.12",
+        "nuxt-leaflet": "^0.0.25",
         "nuxt-property-decorator": "^2.9.1"
     },
     "devDependencies": {
