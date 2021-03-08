@@ -2,9 +2,7 @@
   <div>
     <div class="app-body">
       <floating-search></floating-search>
-      <map-container id="map">
-        
-      </map-container>
+      <map-container :ip="ip"></map-container>
 
       <div class="news">
         <div class="news-header">
@@ -35,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from "nuxt-property-decorator";
+import { Vue, Component} from "nuxt-property-decorator";
 
 @Component({
   components: {
@@ -46,6 +44,13 @@ import { Vue, Component } from "nuxt-property-decorator";
   }
 })
 export default class Index extends Vue {
+
+  async asyncData({req}) {
+    return {
+      ip: req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'] : '8.8.8.8'
+    }
+  }
+
 }
 </script>
 

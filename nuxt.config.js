@@ -1,6 +1,6 @@
 export default {
     // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
-    ssr: false,
+    // ssr: false,
 
     // Global page headers: https://go.nuxtjs.dev/config-head
     head: {
@@ -50,7 +50,7 @@ export default {
 
     proxy: {
         '/api': "https://crime-spotter-backend.herokuapp.com/",
-        '/external/ip': { target: "http://ip-api.com/json/?fields=61439", pathRewrite: { '^/external/ip': '' } }
+        '/external/ip': { target: "http://ip-api.com/json/", pathRewrite: { '^/external/ip': '' } }
     },
 
     // Build Configuration: https://go.nuxtjs.dev/config-build
