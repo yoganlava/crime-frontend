@@ -6,6 +6,8 @@ COPY . .
 
 RUN npm i
 
+RUN npx patch-package
+
 RUN npm run build
 
 CMD npm start
