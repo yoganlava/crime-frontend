@@ -19,6 +19,7 @@ interface LMap extends Element {
 @Component
 export default class MapContainer extends Vue {
   @Prop() ip: string;
+  lastLayer: L.Polygon | L.Rectangle;
 
   $refs!: {
     map: LMap;
@@ -36,6 +37,17 @@ export default class MapContainer extends Vue {
       drawCircleMarker: false,
       cutPolygon: false
     });
+
+    this.$refs.map.mapObject.on('pm:create', this.removeLastLayer);
+  }
+
+  removeLastLayer(e) {
+    if (this.lastLayer != undefined) this.$refs.map.mapObject.removeLayer(this.lastLayer)
+    this.lastLayer = e.layer;
+  }
+
+  getPolygonCoords() {
+    return this.lastLayer.getLatLngs();
   }
 
   panMapTo(coords) {
