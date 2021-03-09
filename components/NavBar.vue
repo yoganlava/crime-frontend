@@ -48,11 +48,11 @@
           <div class="flex-shrink-0 flex items-center">
             <h1 class="nav-title">Crime</h1>
           </div>
-          <div class="hidden sm:block sm:ml-6">
+          <div class="sm:block sm:ml-6">
             <div class="flex space-x-4">
               <nuxt-link
                 class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                to="/index"
+                to="/"
               >
                 Home
               </nuxt-link>
@@ -72,7 +72,7 @@
       <div class="px-2 pt-2 pb-3 space-y-1">
         <nuxt-link
           class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-          to="/index"
+          to="/"
         >
           Home
         </nuxt-link>

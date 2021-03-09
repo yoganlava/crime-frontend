@@ -36,9 +36,9 @@ import { Vue, Component } from "nuxt-property-decorator";
 @Component
 export default class FloatingSearch extends Vue {
   address: string = "";
-
+  // Get geo location of specified query and emit goToAddress message
   async search() {
-    let geocode = await this.$http.$get(`https://geocode.xyz/${this.address}?json=1`);
+    let geocode = await this.$http.$get(`https://geocode.xyz/${this.address.replaceAll(" ", "+")}?json=1`);
     this.$root.$emit("goToAddress", [geocode.latt, geocode.longt]);
   }
 }
