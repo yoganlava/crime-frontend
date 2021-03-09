@@ -51,6 +51,7 @@ export default class MapContainer extends Vue {
   async resolveCrimes(e) {
     this.replaceLastLayer(e.layer);
     console.log(this.calculatePolygonArea(this.getLastPolygonCoords()));
+    // Limit polygon area to 500000 (arbitrary number found from minimal testing)
     if (this.calculatePolygonArea(this.getLastPolygonCoords()) > 500000) {
       this.$toast.show({
         type: "danger",
