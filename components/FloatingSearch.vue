@@ -1,11 +1,13 @@
 <template>
   <div class="pt-2 relative mx-auto text-gray-600 search-container">
     <input
+      v-model="address"
+      v-on:keyup.enter="search"
       class="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
       type="search"
-      placeholder="Search City"
+      placeholder="Search address"
     />
-    <button type="submit" class="absolute right-0 top-0 mt-5 mr-4">
+    <button type="submit" class="absolute right-0 top-0 mt-5 mr-4" @click="search">
       <svg
         class="text-gray-600 h-4 w-4 fill-current"
         xmlns="http://www.w3.org/2000/svg"
@@ -31,7 +33,15 @@
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
 
-export default class FloatingSearch extends Vue {}
+@Component
+export default class FloatingSearch extends Vue {
+  address: string = "";
+
+  async search() {
+    let geocode = await this.$http.$get(`https://geocode.xyz/${this.address}?json=1`);
+    this.$root.$emit("goToAddress", [geocode.latt, geocode.longt]);
+  }
+}
 </script>
 
 <style>
@@ -40,6 +50,6 @@ export default class FloatingSearch extends Vue {}
   position: absolute;
   left: 50%;
   top: 15%;
-  transform: translate(-50%, -50%)
+  transform: translate(-50%, -50%);
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="map-container">
     <client-only>
-      <l-map ref="map" :zoom="13" :center="[55.9464418, 8.1277591]">
+      <l-map ref="map" :zoom="14">
         <l-tile-layer
           url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
         ></l-tile-layer>
@@ -11,7 +11,6 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from "nuxt-property-decorator";
-// import PM from "@geoman-io/leaflet-geoman-free";
 interface LMap extends Element {
   mapObject: L.Map;
 }
@@ -40,30 +39,58 @@ export default class MapContainer extends Vue {
     });
 
     this.$refs.map.mapObject.on("pm:create", this.removeLastLayer);
+
+    this.$root.$on("goToAddress", coords => {
+      this.goToAddress(coords);
+    });
   }
 
   async removeLastLayer(e) {
-    if (this.lastLayer != undefined)
-      this.$refs.map.mapObject.removeLayer(this.lastLayer);
-    this.lastLayer = e.layer;
-    await this.markCrimesInLayer(this.lastLayer);
+    this.replaceLastLayer(e.layer);
+    await this.markCrimesInLastLayer();
   }
 
-  async markCrimesInLayer(layer: L.Polygon | L.Rectangle) {
+  async markCrimesInLastLayer() {
     let crimes: Array<any> = await this.$http.$get(
-      `https://data.police.uk/api/crimes-street/all-crime?poly=${this.getPolygonCoords().join(
+      `https://data.police.uk/api/crimes-street/all-crime?poly=${this.getLastPolygonCoords().join(
         ":"
       )}`
     );
-    console.log(crimes);
     this.markerGroup.clearLayers();
     crimes.forEach(crime => {
-      this.addMarker([crime.location.latitude, crime.location.longitude], crime.category);
+      this.addMarker(
+        [crime.location.latitude, crime.location.longitude],
+        crime.category
+      );
     });
-
   }
 
-  getPolygonCoords() {
+  createCircularPolygon(center, radius = 100) {
+    var project = this.getMap().latLngToLayerPoint.bind(this.getMap()),
+      unproject = this.getMap().layerPointToLatLng.bind(this.getMap()),
+      projectedCentroid = project(center),
+      angle = 0.0,
+      points = [];
+
+    for (var i = 0; i < 10; i++) {
+      angle -= (Math.PI * 2) / 10;
+      var point = new this.$L.Point(
+        projectedCentroid.x + radius * Math.cos(angle),
+        projectedCentroid.y + radius * Math.sin(angle)
+      );
+      points.push(unproject(point));
+    }
+    this.replaceLastLayer(this.$L.polygon(points));
+    this.lastLayer.addTo(this.getMap());
+  }
+
+  replaceLastLayer(newLayer) {
+    if (this.lastLayer != undefined)
+      this.getMap().removeLayer(this.lastLayer);
+    this.lastLayer = newLayer;
+  }
+
+  getLastPolygonCoords() {
     return (this.lastLayer.getLatLngs()[0] as Array<{
       lat;
       lng;
@@ -72,14 +99,23 @@ export default class MapContainer extends Vue {
 
   getMap = () => this.$refs.map.mapObject;
 
+  async goToAddress(coords) {
+    this.panMapTo(coords);
+    this.createCircularPolygon(coords);
+    await this.markCrimesInLastLayer();
+  }
+
   panMapTo(coords) {
     this.getMap().panTo(coords);
   }
 
   addMarker(coords, text) {
-    this.$L.marker(coords, {
-      title: text,
-    }).bindPopup(text).addTo(this.markerGroup);
+    this.$L
+      .marker(coords, {
+        title: text
+      })
+      .bindPopup(text)
+      .addTo(this.markerGroup);
   }
 }
 </script>
