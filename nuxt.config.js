@@ -22,7 +22,7 @@ export default {
 
     // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
     plugins: [
-        "~/plugins/http"
+        "~/plugins/injects"
     ],
 
     // Auto import components: https://go.nuxtjs.dev/config-components
@@ -40,7 +40,7 @@ export default {
     modules: [
         '@nuxt/http',
         '@nuxtjs/proxy',
-        'nuxt-leaflet'
+        'nuxt-leaflet', ['nuxt-tailvue', { toast: true }]
     ],
 
     http: {

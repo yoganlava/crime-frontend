@@ -4,6 +4,7 @@
       <l-map ref="map" :zoom="14">
         <l-tile-layer
           url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+          :noWrap="true"
         ></l-tile-layer>
       </l-map>
     </client-only>
@@ -49,17 +50,27 @@ export default class MapContainer extends Vue {
   // Resolves all crimes when a polygon has been created while deleting the old polygons
   async resolveCrimes(e) {
     this.replaceLastLayer(e.layer);
+    console.log(this.calculatePolygonArea(this.getLastPolygonCoords()));
+    if (this.calculatePolygonArea(this.getLastPolygonCoords()) > 500000) {
+      this.$toast.show({
+        type: "danger",
+        title: "Error",
+        message: "Area too big"
+      });
+      this.markerGroup.clearLayers();
+      return;
+    }
     await this.markCrimesInLastLayer();
   }
 
   // Sends polygon to crime api and marks all the crimes recieved on the map
   async markCrimesInLastLayer() {
+    this.markerGroup.clearLayers();
     let crimes: Array<any> = await this.$http.$get(
       `https://data.police.uk/api/crimes-street/all-crime?poly=${this.getLastPolygonCoords().join(
         ":"
       )}`
     );
-    this.markerGroup.clearLayers();
     crimes.forEach(crime => {
       this.addMarker(
         [crime.location.latitude, crime.location.longitude],
@@ -92,7 +103,7 @@ export default class MapContainer extends Vue {
 
   // Replace last polygon with new polygon
   replaceLastLayer(newLayer) {
-    if (this.lastLayer != undefined) this.getMap().removeLayer( this.lastLayer);
+    if (this.lastLayer != undefined) this.getMap().removeLayer(this.lastLayer);
     this.lastLayer = newLayer;
   }
 
@@ -118,6 +129,7 @@ export default class MapContainer extends Vue {
   panMapTo(coords) {
     this.getMap().panTo(coords);
   }
+
   // Add marker at specified coord with html text
   addMarker(coords, text, type) {
     this.$L
@@ -125,13 +137,46 @@ export default class MapContainer extends Vue {
         title: text,
         icon: this.$L.icon({
           iconUrl: `markers/${type}.png`,
-          iconSize: [55/1.5, 84/1.5],
-          iconAnchor: [27.5/1.5, 84/1.5],
+          iconSize: [55 / 1.5, 84 / 1.5],
+          iconAnchor: [27.5 / 1.5, 84 / 1.5],
           popupAnchor: [1, -34]
         })
       })
       .bindPopup(text)
       .addTo(this.markerGroup);
+  }
+
+  calculatePolygonArea(points) {
+    let area = 0;
+    let lowerIndex;
+    let middleIndex;
+    let upperIndex;
+
+    for (let i = 0; i < points.length; i++) {
+      if (i === points.length - 2) {
+        lowerIndex = points.length - 2;
+        middleIndex = points.length - 1;
+        upperIndex = 0;
+      } else if (i === points.length - 1) {
+        lowerIndex = points.length - 1;
+        middleIndex = 0;
+        upperIndex = 1;
+      } else {
+        lowerIndex = i;
+        middleIndex = i + 1;
+        upperIndex = i + 2;
+      }
+
+      const p1lon = points[lowerIndex][1];
+      const p2lat = points[middleIndex][0];
+      const p3lon = points[upperIndex][1];
+      area +=
+        (p3lon / Math.PI / 180 - p1lon / Math.PI / 180) *
+        Math.sin(p2lat / Math.PI / 180);
+    }
+    area *= (6378137 * 6378137) / 2;
+
+    return Math.abs(area);
   }
 }
 </script>
