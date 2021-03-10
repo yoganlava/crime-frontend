@@ -43,9 +43,11 @@ import { Vue, Component } from "nuxt-property-decorator";
   }
 })
 export default class Index extends Vue {
-
+  ip: string;
   // Get real ip from x-forwarded-for header due to heroku tunneling res through proxy
   async asyncData({req}) {
+    if (req == undefined)
+      return
     return {
       ip: req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'] : '8.8.8.8'
     }

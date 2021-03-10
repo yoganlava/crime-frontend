@@ -51,10 +51,16 @@
           <div class="sm:block sm:ml-6">
             <div class="flex space-x-4">
               <nuxt-link
-                class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+                class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                 to="/"
               >
                 Home
+              </nuxt-link>
+              <nuxt-link
+                class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                to="/analytics"
+              >
+                Analytics
               </nuxt-link>
               <nuxt-link
                 class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
@@ -67,14 +73,19 @@
         </div>
       </div>
     </div>
-
     <div class="sm:hidden" id="mobile-menu">
       <div class="px-2 pt-2 pb-3 space-y-1">
         <nuxt-link
-          class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+          class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
           to="/"
         >
           Home
+        </nuxt-link>
+        <nuxt-link
+          class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          to="/analytics"
+        >
+          Analytics
         </nuxt-link>
         <nuxt-link
           class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
