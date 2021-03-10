@@ -39,6 +39,7 @@ export default {
         "nuxt-leaflet", ["nuxt-tailvue", { toast: true }]
     ],
 
+    // ! FIX PURGE AFTER PROJECT FINISHES
     purgeCSS: {
         enabled: false
     },
