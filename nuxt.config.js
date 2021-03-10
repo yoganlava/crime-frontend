@@ -39,6 +39,10 @@ export default {
         "nuxt-leaflet", ["nuxt-tailvue", { toast: true }]
     ],
 
+    purgeCSS: {
+        enabled: false
+    },
+
     http: {
         proxy: true
     },
