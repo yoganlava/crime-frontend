@@ -75,7 +75,10 @@ export default class MapContainer extends Vue {
     crimes.forEach(crime => {
       this.addMarker(
         [crime.location.latitude, crime.location.longitude],
-        crime.category,
+        `<b>Crime Type:</b> ${crime.category.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}<br>
+        <b>Month:</b> ${crime.month}<br>
+        <b>Outcome:</b> ${crime.outcome_status == null ? 'None' : crime.outcome_status.category}
+        `,
         crime.category
       );
     });
