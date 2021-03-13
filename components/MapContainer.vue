@@ -63,6 +63,7 @@ export default class MapContainer extends Vue {
       return;
     }
     await this.markCrimesInLastLayer();
+    await this.loadPoliceStations();
   }
 
   // Sends polygon to crime api and marks all the crimes recieved on the map
@@ -76,11 +77,35 @@ export default class MapContainer extends Vue {
     crimes.forEach(crime => {
       this.addMarker(
         [crime.location.latitude, crime.location.longitude],
-        `<b>Crime Type:</b> ${crime.category.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}<br>
-        <b>Month:</b> ${crime.month}<br>
-        <b>Outcome:</b> ${crime.outcome_status == null ? 'Not resolved' : crime.outcome_status.category}
+        `<b>Crime Type:</b> ${crime.category
+          .split("-")
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ")}<br>
+        <b>Date:</b> ${crime.month}<br>
+        <b>Outcome:</b> ${
+          crime.outcome_status == null
+            ? "Not resolved"
+            : crime.outcome_status.category
+        }
         `,
         crime.category
+      );
+    });
+  }
+
+  async loadPoliceStations() {
+    let centroid = this.getPolygonCentroid(this.getLastPolygonCoords()),
+    nearestStations = await this.$http.$get(
+      `https://www.met.police.uk/api/v1/en-GB/policestationresults/getnearestpolicestationresults/json?lat=${centroid[0]}&lng=${centroid[1]}&numberOfResults=5&_=${Math.round(Date.now() / 1000)}`
+      );
+    nearestStations.forEach(station => {
+      this.addMarker([station.latitude, station.longitude],
+      `<b>Station Name: </b> ${station.policeStationName}<br>
+      <b>Police Force: </b> ${station.policeForceName}<br>
+      <b>Address: </b> ${station.address}<br>
+      <b>Opening Times: </b> ${station.openingTimes} 
+      `, 
+      "station"
       );
     });
   }
@@ -120,6 +145,15 @@ export default class MapContainer extends Vue {
     }>).map(latlng => [latlng.lat, latlng.lng]);
   }
 
+  // Get center of polygon
+  getPolygonCentroid(points: Array<Array<number>>): Array<number> {
+    var x = points.map(point => point[0]),
+      y = points.map(point => point[1]),
+      cx = (Math.min(...x) + Math.max(...x)) / 2,
+      cy = (Math.min(...y) + Math.max(...y)) / 2;
+    return [cx, cy];
+  }
+
   // Map getter
   getMap = () => this.$refs.map.mapObject;
 
@@ -128,6 +162,7 @@ export default class MapContainer extends Vue {
     this.panMapTo(coords);
     this.createCircularPolygon(coords);
     await this.markCrimesInLastLayer();
+    await this.loadPoliceStations();
   }
 
   // Pan map to set coords
