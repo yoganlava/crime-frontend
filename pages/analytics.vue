@@ -12,7 +12,7 @@
           <input
             class="border-2 border-gray-300 bg-white h-10 px-5 pr-64 rounded-lg text-sm focus:outline-none"
             type="search"
-            placeholder="Search address"
+            placeholder="Search City"
           />
           <button type="submit" class="absolute right-0 top-0 mt-5 mr-4">
             <svg
@@ -37,7 +37,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="break"></div> -->
     <city-analysis></city-analysis>
   </div>
 </template>

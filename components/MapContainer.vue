@@ -31,17 +31,18 @@ export default class MapContainer extends Vue {
     let geoInfo = await this.$http.$get(`/external/ip/${this.ip}`);
     this.markerGroup = this.$L.layerGroup().addTo(this.getMap());
     this.panMapTo([geoInfo.lat, geoInfo.lon]);
-    this.$refs.map.mapObject.pm.addControls({
+    this.getMap().pm.addControls({
       position: "topleft",
       drawCircle: false,
       drawPolyline: false,
       drawMarker: false,
       drawCircleMarker: false,
-      cutPolygon: false
+      cutPolygon: false,
+      dragMode: false,
+      editMode: false,
+      oneBlock: true
     });
-
-    this.$refs.map.mapObject.on("pm:create", this.resolveCrimes);
-
+    this.getMap().on("pm:create", this.resolveCrimes);
     this.$root.$on("goToAddress", coords => {
       this.goToAddress(coords);
     });
@@ -77,7 +78,7 @@ export default class MapContainer extends Vue {
         [crime.location.latitude, crime.location.longitude],
         `<b>Crime Type:</b> ${crime.category.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}<br>
         <b>Month:</b> ${crime.month}<br>
-        <b>Outcome:</b> ${crime.outcome_status == null ? 'None' : crime.outcome_status.category}
+        <b>Outcome:</b> ${crime.outcome_status == null ? 'Not resolved' : crime.outcome_status.category}
         `,
         crime.category
       );
