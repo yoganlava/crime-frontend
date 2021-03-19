@@ -1,3 +1,6 @@
+![docker](https://github.com/yoganlava/crime-frontend/actions/workflows/docker-publish.yml/badge.svg)
+
+
 # crime-frontend
 
 ## Build Setup
