@@ -27,7 +27,7 @@ import { Websocket, WebsocketBuilder } from "websocket-ts"
 export default class NewsTable extends Vue {
   _socket: Websocket
   mounted() {
-    this._socket = new WebsocketBuilder("ws://crime-spotter-backend.herokuapp.com/news")
+    this._socket = new WebsocketBuilder("wss://crime-spotter-backend.herokuapp.com/news")
     .onOpen(this.onSocketOpen)
     .onMessage(this.parseWebsocketMessage)
     .build()
