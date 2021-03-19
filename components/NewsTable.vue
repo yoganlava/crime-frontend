@@ -22,7 +22,6 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
-import ActionCable from "actioncable";
 @Component
 export default class NewsTable extends Vue {
   channels = {
