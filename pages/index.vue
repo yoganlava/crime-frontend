@@ -25,7 +25,7 @@
             <span>Add City</span>
           </button>
         </div>
-        <div class="news-table-container" v-for="i in [1, 2, 3]" :key="i">
+        <div class="news-table-container" v-for="i in [1]" :key="i">
           <news-table></news-table>
         </div>
       </div>

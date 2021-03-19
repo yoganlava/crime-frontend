@@ -22,8 +22,27 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
+import { Websocket, WebsocketBuilder } from "websocket-ts"
 @Component
-export default class NewsTable extends Vue {}
+export default class NewsTable extends Vue {
+  _socket: Websocket
+  mounted() {
+    this._socket = new WebsocketBuilder("ws://crime-spotter-backend.herokuapp.com/news")
+    .onOpen(this.onSocketOpen)
+    .onMessage(this.parseWebsocketMessage)
+    .build()
+  }
+
+  onSocketOpen(i, e) {
+    console.log(i);
+    console.log(e);
+  }
+
+  parseWebsocketMessage(i, e) {
+    console.log(i);
+    console.log(e);
+  }
+}
 </script>
 
 <style>
