@@ -16,13 +16,15 @@
         "@nuxt/http": "^0.6.4",
         "@nuxt/typescript-runtime": "^2.0.1",
         "@nuxtjs/proxy": "^2.1.0",
+        "@types/actioncable": "^5.2.3",
+        "actioncable": "^5.2.4-5",
+        "actioncable-vue": "^2.4.6",
         "core-js": "^3.8.3",
         "nuxt": "^2.14.12",
         "nuxt-leaflet": "^0.0.25",
         "nuxt-property-decorator": "^2.9.1",
         "nuxt-tailvue": "^1.0.68",
-        "patch-package": "^6.4.6",
-        "websocket-ts": "^1.1.0"
+        "patch-package": "^6.4.6"
     },
     "devDependencies": {
         "@nuxt/types": "^2.14.12",

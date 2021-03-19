@@ -22,31 +22,29 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
-import { Websocket, WebsocketBuilder } from "websocket-ts"
+import ActionCable from "actioncable";
 @Component
 export default class NewsTable extends Vue {
-  _socket: Websocket
+  channels = {
+    NewsChannel: {
+      received: this.parseMessage
+    }
+  };
+
   mounted() {
-    this._socket = new WebsocketBuilder("wss://crime-spotter-backend.herokuapp.com/news")
-    .onOpen(this.onSocketOpen)
-    .onMessage(this.parseWebsocketMessage)
-    .build()
+    this.$cable.subscribe({
+      channel: "NewsChannel"
+    });
   }
 
-  onSocketOpen(i, e) {
-    console.log(i);
-    console.log(e);
-  }
-
-  parseWebsocketMessage(i, e) {
-    console.log(i);
-    console.log(e);
+  parseMessage(data) {
+    console.log(data);
   }
 }
 </script>
 
 <style>
 .news-table {
-    margin: 5% 5%;
+  margin: 5% 5%;
 }
 </style>
