@@ -1,23 +1,5 @@
 ![docker](https://github.com/yoganlava/crime-frontend/actions/workflows/docker-publish.yml/badge.svg)
-
+![Node.js](https://github.com/yoganlava/crime-frontend/actions/workflows/node.js.yml/badge.svg)
 
 # crime-frontend
-
-## Build Setup
-
-```bash
-# install dependencies
-$ npm install
-
-# serve with hot reload at localhost:3000
-$ npm run dev
-
-# build for production and launch server
-$ npm run build
-$ npm run start
-
-# generate static project
-$ npm run generate
-```
-
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+Frontend code for [Crime Spotter](https://crime-spotter-docker.herokuapp.com/)
