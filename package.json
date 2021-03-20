@@ -21,7 +21,6 @@
     "actioncable": "^5.2.4-5",
     "actioncable-vue": "^2.4.6",
     "core-js": "^3.8.3",
-    "leaflet-sidebar-v2": "^3.2.3",
     "nuxt": "^2.14.12",
     "nuxt-leaflet": "^0.0.25",
     "nuxt-property-decorator": "^2.9.1",

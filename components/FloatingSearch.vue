@@ -44,12 +44,19 @@ export default class FloatingSearch extends Vue {
 }
 </script>
 
-<style>
+<style scoped>
 .search-container {
   z-index: 1;
   position: absolute;
   left: 50%;
   top: 15%;
   transform: translate(-50%, -50%);
+  opacity: 0.7;
+  transition: ease-in 0.25s;
+}
+
+.search-container:hover {
+  opacity: 1;
+  transition: ease-in 0.25s;
 }
 </style>

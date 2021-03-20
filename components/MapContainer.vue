@@ -17,11 +17,7 @@ interface LMap extends Element {
   mapObject: L.Map;
 }
 
-@Component({
-  components: {
-    RoutingTab: () => import("./RoutingTab.vue")
-  }
-})
+@Component
 export default class MapContainer extends Vue {
   @Prop() ip: string;
   lastLayer: L.Polygon | L.Rectangle;
@@ -248,7 +244,6 @@ export default class MapContainer extends Vue {
 
 <style>
 @import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
-@import "leaflet-sidebar-v2/css/leaflet-sidebar.css";
 
 .icon-compass {
   background-image: url("/icons/compass.svg");
