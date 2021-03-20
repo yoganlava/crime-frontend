@@ -1,5 +1,5 @@
 <template>
-  <div class="map-container">
+  <div class="map-container" :class="{ fullscreen: fullscreen }">
     <client-only>
       <l-map ref="map" :zoom="14">
         <l-tile-layer
@@ -12,15 +12,21 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from "nuxt-property-decorator";
+
 interface LMap extends Element {
   mapObject: L.Map;
 }
 
-@Component
+@Component({
+  components: {
+    RoutingTab: () => import("./RoutingTab.vue")
+  }
+})
 export default class MapContainer extends Vue {
   @Prop() ip: string;
   lastLayer: L.Polygon | L.Rectangle;
   markerGroup: L.LayerGroup;
+  fullscreen: boolean = false;
 
   $refs!: {
     map: LMap;
@@ -31,17 +37,7 @@ export default class MapContainer extends Vue {
     let geoInfo = await this.$http.$get(`/external/ip/${this.ip}`);
     this.markerGroup = this.$L.layerGroup().addTo(this.getMap());
     this.panMapTo([geoInfo.lat, geoInfo.lon]);
-    this.getMap().pm.addControls({
-      position: "topleft",
-      drawCircle: false,
-      drawPolyline: false,
-      drawMarker: false,
-      drawCircleMarker: false,
-      cutPolygon: false,
-      dragMode: false,
-      editMode: false,
-      oneBlock: true
-    });
+    this.initialiseToolbar();
     this.getMap().on("pm:create", this.resolveCrimes);
     this.$root.$on("goToAddress", coords => {
       this.goToAddress(coords);
@@ -64,6 +60,30 @@ export default class MapContainer extends Vue {
     }
     await this.markCrimesInLastLayer();
     await this.loadPoliceStations();
+  }
+
+  initialiseToolbar() {
+    this.getMap().pm.addControls({
+      position: "topleft",
+      drawCircle: false,
+      drawPolyline: false,
+      drawMarker: false,
+      drawCircleMarker: false,
+      cutPolygon: false,
+      dragMode: false,
+      editMode: false,
+      oneBlock: true
+    });
+    this.getMap().pm.Toolbar.createCustomControl({
+      name: "fullscreen",
+      title: "Fullscreen",
+      onClick: () => {
+        this.fullscreen = !this.fullscreen;
+        // Hacky way to wait after DOM update
+        setTimeout(() => this.getMap().invalidateSize(), 50);
+      },
+      className: "icon-maximise"
+    });
   }
 
   // Sends polygon to crime api and marks all the crimes recieved on the map
@@ -95,17 +115,22 @@ export default class MapContainer extends Vue {
 
   async loadPoliceStations() {
     let centroid = this.getPolygonCentroid(this.getLastPolygonCoords()),
-    nearestStations = await this.$http.$get(
-      `https://www.met.police.uk/api/v1/en-GB/policestationresults/getnearestpolicestationresults/json?lat=${centroid[0]}&lng=${centroid[1]}&numberOfResults=5&_=${Math.round(Date.now() / 1000)}`
+      nearestStations = await this.$http.$get(
+        `https://www.met.police.uk/api/v1/en-GB/policestationresults/getnearestpolicestationresults/json?lat=${
+          centroid[0]
+        }&lng=${centroid[1]}&numberOfResults=5&_=${Math.round(
+          Date.now() / 1000
+        )}`
       );
     nearestStations.forEach(station => {
-      this.addMarker([station.latitude, station.longitude],
-      `<b>Station Name: </b> ${station.policeStationName}<br>
+      this.addMarker(
+        [station.latitude, station.longitude],
+        `<b>Station Name: </b> ${station.policeStationName}<br>
       <b>Police Force: </b> ${station.policeForceName}<br>
       <b>Address: </b> ${station.address}<br>
       <b>Opening Times: </b> ${station.openingTimes} 
-      `, 
-      "station"
+      `,
+        "station"
       );
     });
   }
@@ -223,6 +248,24 @@ export default class MapContainer extends Vue {
 
 <style>
 @import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+@import "leaflet-sidebar-v2/css/leaflet-sidebar.css";
+
+.icon-compass {
+  background-image: url("/icons/compass.svg");
+}
+
+.icon-maximise {
+  background-image: url("/icons/maximise.svg");
+}
+
+.fullscreen {
+  position: absolute !important;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  margin: 0px !important;
+}
 
 .map-container {
   z-index: 0;
