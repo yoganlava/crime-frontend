@@ -5,6 +5,12 @@
         <l-tile-layer
           url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
           :noWrap="true"
+          v-if="!darkMode"
+        ></l-tile-layer>
+        <l-tile-layer
+          url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+          :noWrap="true"
+          v-else
         ></l-tile-layer>
       </l-map>
     </client-only>
@@ -17,9 +23,7 @@ interface LMap extends Element {
   mapObject: L.Map;
 }
 
-interface MarkerClusterGroup extends L.LayerGroup {
-}
-
+interface MarkerClusterGroup extends L.LayerGroup {}
 
 @Component
 export default class MapContainer extends Vue {
@@ -28,6 +32,7 @@ export default class MapContainer extends Vue {
   crimeGroup: MarkerClusterGroup;
   stationGroup: L.LayerGroup;
   fullscreen: boolean = false;
+  darkMode: boolean = false;
 
   $refs!: {
     map: LMap;
@@ -67,12 +72,23 @@ export default class MapContainer extends Vue {
   }
 
   analyseLastLayer() {
-    var crimeCounter = {}
-
-
-
+    var crimeMap = {};
+    this.crimeGroup.getLayers().forEach((crimeMarker: any) => {
+      crimeMap[crimeMarker.options.title] = crimeMap[crimeMarker.options.title]
+        ? crimeMap[crimeMarker.options.title] + 1
+        : 1;
+    });
+    console.log(crimeMap);
     this.lastLayer.bindPopup(
-      `<p><b>Amount of crimes: </b>${this.crimeGroup.getLayers().length}</p>`
+      `<p><b>Amount of crimes: </b>${this.crimeGroup.getLayers().length}</p>\n
+      <p><b>Most frequent crime: </b>${Object.keys(crimeMap)
+        .reduce(function(a, b) {
+          return crimeMap[a] > crimeMap[b] ? a : b;
+        })
+        .split("-")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")}</p>
+      `
     );
   }
 
@@ -97,6 +113,34 @@ export default class MapContainer extends Vue {
         setTimeout(() => this.getMap().invalidateSize(), 50);
       },
       className: "icon-maximise",
+      block: "options",
+      toggle: false
+    });
+    this.getMap().pm.Toolbar.createCustomControl({
+      name: "filter",
+      title: "Filter By",
+      className: "icon-filter",
+      actions: [
+        {text: "All", onClick: () => {
+          console.log("ALL")
+        }},
+        {text: "Anti Social Behavior", onClick: () => {
+          console.log("Anti Social Behavior")
+        }},
+        {text: "Bicycle Theft", onClick: () => {
+          console.log("Bicycle Theft")
+        }},
+      ],
+      block: "options"
+    });
+
+    this.getMap().pm.Toolbar.createCustomControl({
+      name: "darkMode",
+      title: "Dark mode",
+      onClick: () => {
+        this.darkMode = !this.darkMode;
+      },
+      className: "icon-moon",
       block: "options",
       toggle: false
     });
@@ -275,13 +319,24 @@ export default class MapContainer extends Vue {
 @import "leaflet.markercluster/dist/MarkerCluster.css";
 @import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
-
 .icon-compass {
   background-image: url("/icons/compass.svg");
 }
 
 .icon-maximise {
   background-image: url("/icons/maximise.svg");
+}
+
+.icon-filter {
+  background-image: url("/icons/filter.svg");
+}
+
+.icon-moon {
+  background-image: url("/icons/moon.svg");
+}
+
+.button-container.active .leaflet-pm-actions-container {
+  display: grid;
 }
 
 .fullscreen {
