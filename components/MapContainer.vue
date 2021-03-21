@@ -17,11 +17,16 @@ interface LMap extends Element {
   mapObject: L.Map;
 }
 
+interface MarkerClusterGroup extends L.LayerGroup {
+}
+
+
 @Component
 export default class MapContainer extends Vue {
   @Prop() ip: string;
   lastLayer: L.Polygon | L.Rectangle;
-  markerGroup: L.LayerGroup;
+  crimeGroup: MarkerClusterGroup;
+  stationGroup: L.LayerGroup;
   fullscreen: boolean = false;
 
   $refs!: {
@@ -31,7 +36,8 @@ export default class MapContainer extends Vue {
   // Set up map after mounted
   async mounted() {
     let geoInfo = await this.$http.$get(`/external/ip/${this.ip}`);
-    this.markerGroup = this.$L.layerGroup().addTo(this.getMap());
+    this.crimeGroup = this.$L.markerClusterGroup().addTo(this.getMap());
+    this.stationGroup = this.$L.layerGroup().addTo(this.getMap());
     this.panMapTo([geoInfo.lat, geoInfo.lon]);
     this.initialiseToolbar();
     this.getMap().on("pm:create", this.resolveCrimes);
@@ -51,11 +57,23 @@ export default class MapContainer extends Vue {
         title: "Error",
         message: "Area too big"
       });
-      this.markerGroup.clearLayers();
+      this.crimeGroup.clearLayers();
+      this.stationGroup.clearLayers();
       return;
     }
     await this.markCrimesInLastLayer();
     await this.loadPoliceStations();
+    this.analyseLastLayer();
+  }
+
+  analyseLastLayer() {
+    var crimeCounter = {}
+
+
+
+    this.lastLayer.bindPopup(
+      `<p><b>Amount of crimes: </b>${this.crimeGroup.getLayers().length}</p>`
+    );
   }
 
   initialiseToolbar() {
@@ -78,13 +96,15 @@ export default class MapContainer extends Vue {
         // Hacky way to wait after DOM update
         setTimeout(() => this.getMap().invalidateSize(), 50);
       },
-      className: "icon-maximise"
+      className: "icon-maximise",
+      block: "options",
+      toggle: false
     });
   }
 
   // Sends polygon to crime api and marks all the crimes recieved on the map
   async markCrimesInLastLayer() {
-    this.markerGroup.clearLayers();
+    this.crimeGroup.clearLayers();
     let crimes: Array<any> = await this.$http.$get(
       `https://data.police.uk/api/crimes-street/all-crime?poly=${this.getLastPolygonCoords().join(
         ":"
@@ -104,12 +124,14 @@ export default class MapContainer extends Vue {
             : crime.outcome_status.category
         }
         `,
-        crime.category
+        crime.category,
+        this.crimeGroup
       );
     });
   }
 
   async loadPoliceStations() {
+    this.stationGroup.clearLayers();
     let centroid = this.getPolygonCentroid(this.getLastPolygonCoords()),
       nearestStations = await this.$http.$get(
         `https://www.met.police.uk/api/v1/en-GB/policestationresults/getnearestpolicestationresults/json?lat=${
@@ -123,10 +145,15 @@ export default class MapContainer extends Vue {
         [station.latitude, station.longitude],
         `<b>Station Name: </b> ${station.policeStationName}<br>
       <b>Police Force: </b> ${station.policeForceName}<br>
-      <b>Address: </b> ${station.address}<br>
-      <b>Opening Times: </b> ${station.openingTimes} 
+      <b>Address: </b> ${station.address
+        .replaceAll("\n", "")
+        .replaceAll("<p>&nbsp;</p>", "")}<br>
+      <b>Opening Times: </b> ${station.openingTimes
+        .replaceAll("\n", "")
+        .replaceAll("<p>&nbsp;</p>", "")} 
       `,
-        "station"
+        "station",
+        this.stationGroup
       );
     });
   }
@@ -184,6 +211,7 @@ export default class MapContainer extends Vue {
     this.createCircularPolygon(coords);
     await this.markCrimesInLastLayer();
     await this.loadPoliceStations();
+    this.analyseLastLayer();
   }
 
   // Pan map to set coords
@@ -192,10 +220,10 @@ export default class MapContainer extends Vue {
   }
 
   // Add marker at specified coord with html text
-  addMarker(coords, text, type) {
+  addMarker(coords, text, type, group) {
     this.$L
       .marker(coords, {
-        title: text,
+        title: type,
         icon: this.$L.icon({
           iconUrl: `markers/${type}.png`,
           iconSize: [55 / 1.5, 84 / 1.5],
@@ -204,7 +232,7 @@ export default class MapContainer extends Vue {
         })
       })
       .bindPopup(text)
-      .addTo(this.markerGroup);
+      .addTo(group);
   }
 
   calculatePolygonArea(points) {
@@ -244,6 +272,9 @@ export default class MapContainer extends Vue {
 
 <style>
 @import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+@import "leaflet.markercluster/dist/MarkerCluster.css";
+@import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+
 
 .icon-compass {
   background-image: url("/icons/compass.svg");

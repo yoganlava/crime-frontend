@@ -1,5 +1,5 @@
 diff --git a/node_modules/@types/leaflet/index.d.ts b/node_modules/@types/leaflet/index.d.ts
-index d9133ef..3295389 100644
+index d9133ef..3d9bcdb 100644
 --- a/node_modules/@types/leaflet/index.d.ts
 +++ b/node_modules/@types/leaflet/index.d.ts
 @@ -1793,6 +1793,7 @@ export class Map extends Evented {
@@ -10,3 +10,12 @@ index d9133ef..3295389 100644
  
      options: MapOptions;
  }
+@@ -1903,6 +1904,8 @@ export class Marker<P = any> extends Layer {
+ 
+ export function marker(latlng: LatLngExpression, options?: MarkerOptions): Marker;
+ 
++export function markerClusterGroup(): LayerGroup;
++
+ export namespace Browser {
+     // sorting according to https://leafletjs.com/reference-1.5.0.html#browser
+     const ie: boolean;

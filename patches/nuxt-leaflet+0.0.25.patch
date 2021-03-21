@@ -40,18 +40,19 @@ index ca2a941..c1c181b 100644
  }
 \ No newline at end of file
 diff --git a/node_modules/nuxt-leaflet/lib/templates/plugin.js b/node_modules/nuxt-leaflet/lib/templates/plugin.js
-index e4de730..220f6c2 100644
+index e4de730..4a2e600 100644
 --- a/node_modules/nuxt-leaflet/lib/templates/plugin.js
 +++ b/node_modules/nuxt-leaflet/lib/templates/plugin.js
-@@ -1,5 +1,7 @@
+@@ -1,5 +1,8 @@
  import Vue from 'vue'
  import * as Vue2Leaflet from 'vue2-leaflet'
 +import "@geoman-io/leaflet-geoman-free"
++import "leaflet.markercluster"
 +
  
  Vue.component('l-circle', Vue2Leaflet.LCircle)
  Vue.component('l-circle-marker', Vue2Leaflet.LCircleMarker)
-@@ -28,21 +30,21 @@ Vue.component('l-lwms-tile-layer', Vue2Leaflet.LWMSTileLayer)
+@@ -28,21 +31,21 @@ Vue.component('l-lwms-tile-layer', Vue2Leaflet.LWMSTileLayer)
  delete L.Icon.Default.prototype._getIconUrl
  L.Icon.Default.imagePath = ''
  L.Icon.Default.mergeOptions({
