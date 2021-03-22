@@ -161,14 +161,14 @@ export default class MapContainer extends Vue {
           .split("-")
           .map(word => word.charAt(0).toUpperCase() + word.slice(1))
           .join(" ")}<br>
-        <b>Date:</b> ${crime.month}<br>
-        <b>Street:</b> ${crime.street}
+        <b>Date:</b> ${crime.crime_date}<br>
+        <b>Street:</b> ${crime.street}<br>
         <b>Outcome:</b> ${
           crime.outcome_status == null
             ? "Not resolved"
-            : crime.outcome_status.category
+            : crime.outcome_status
         }
-        `,
+        <br>` + ((crime.outcome_status == null)? "" : `<b>Outcome Date:</b> ${crime.outcome_date}`),
         crime.category,
         this.crimeGroup
       );
