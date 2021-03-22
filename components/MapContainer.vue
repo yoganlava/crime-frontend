@@ -121,15 +121,24 @@ export default class MapContainer extends Vue {
       title: "Filter By",
       className: "icon-filter",
       actions: [
-        {text: "All", onClick: () => {
-          console.log("ALL")
-        }},
-        {text: "Anti Social Behavior", onClick: () => {
-          console.log("Anti Social Behavior")
-        }},
-        {text: "Bicycle Theft", onClick: () => {
-          console.log("Bicycle Theft")
-        }},
+        {
+          text: "All",
+          onClick: () => {
+            console.log("ALL");
+          }
+        },
+        {
+          text: "Anti Social Behavior",
+          onClick: () => {
+            console.log("Anti Social Behavior");
+          }
+        },
+        {
+          text: "Bicycle Theft",
+          onClick: () => {
+            console.log("Bicycle Theft");
+          }
+        }
       ],
       block: "options"
     });
@@ -155,20 +164,32 @@ export default class MapContainer extends Vue {
       )}&date=2021-01`
     );
     crimes.forEach(crime => {
-      this.addMarker(
-        [crime.latitude, crime.longitude],
-        `<b>Crime Type:</b> ${crime.category
+      let text =
+        `
+        <b>Crime Type:</b> ${crime.category
           .split("-")
           .map(word => word.charAt(0).toUpperCase() + word.slice(1))
           .join(" ")}<br>
         <b>Date:</b> ${crime.crime_date}<br>
         <b>Street:</b> ${crime.street}<br>
         <b>Outcome:</b> ${
-          crime.outcome_status == null
-            ? "Not resolved"
-            : crime.outcome_status
+          crime.outcome_status == null ? "Not resolved" : crime.outcome_status
         }
-        <br>` + ((crime.outcome_status == null)? "" : `<b>Outcome Date:</b> ${crime.outcome_date}`),
+        <br>` +
+        (crime.outcome_status == null
+          ? ""
+          : `<b>Outcome Date:</b> ${crime.outcome_date}`);
+      // Hacky way to extract text for TTS
+      let dummy = document.createElement("div");
+      dummy.innerHTML = `<div>${text}</div>`;
+
+      text =
+        `<button onclick="speak(\`${dummy.innerText}\`)" class="bg-grey-dark hover:bg-grey text-grey-darkest font-bold py-1 px-1 rounded inline-flex items-center">
+          <i class="icon-volume"></i>
+        </button><br>` + text;
+      this.addMarker(
+        [crime.latitude, crime.longitude],
+        text,
         crime.category,
         this.crimeGroup
       );
@@ -334,6 +355,12 @@ export default class MapContainer extends Vue {
 
 .icon-moon {
   background-image: url("/icons/moon.svg");
+}
+
+.icon-volume {
+  background-image: url("/icons/volume.svg");
+  height: 24px;
+  width: 24px;
 }
 
 .button-container.active .leaflet-pm-actions-container {
