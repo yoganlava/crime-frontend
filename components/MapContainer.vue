@@ -150,18 +150,19 @@ export default class MapContainer extends Vue {
   async markCrimesInLastLayer() {
     this.crimeGroup.clearLayers();
     let crimes: Array<any> = await this.$http.$get(
-      `https://data.police.uk/api/crimes-street/all-crime?poly=${this.getLastPolygonCoords().join(
+      `/api/crime/crime?poly=${this.getLastPolygonCoords().join(
         ":"
-      )}`
+      )}&date=2021-01`
     );
     crimes.forEach(crime => {
       this.addMarker(
-        [crime.location.latitude, crime.location.longitude],
+        [crime.latitude, crime.longitude],
         `<b>Crime Type:</b> ${crime.category
           .split("-")
           .map(word => word.charAt(0).toUpperCase() + word.slice(1))
           .join(" ")}<br>
         <b>Date:</b> ${crime.month}<br>
+        <b>Street:</b> ${crime.street}
         <b>Outcome:</b> ${
           crime.outcome_status == null
             ? "Not resolved"

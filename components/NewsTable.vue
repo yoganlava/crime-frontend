@@ -2,6 +2,10 @@
   <div
     class="max-w-sm bg-white border-2 border-gray-300 p-3 rounded-md tracking-wide shadow-lg news-table"
   >
+    <button
+      class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center ml-2"
+      @click="click"
+    > Test </button>
     <table class="table-auto border">
       <thead>
         <tr>
@@ -33,6 +37,17 @@ export default class NewsTable extends Vue {
   mounted() {
     this.$cable.subscribe({
       channel: "NewsChannel"
+    });
+  }
+
+  click() {
+    this.$cable.perform({
+      channel: "NewsChannel",
+      action: "initialise_source",
+      data: {
+        source: "google",
+        location: "london"
+      }
     });
   }
 

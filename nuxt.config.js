@@ -48,7 +48,10 @@ export default {
     },
 
     proxy: {
-        "/api": "https://crime-spotter-backend.herokuapp.com/",
+        "/api": {
+            target: "https://crime-spotter-backend.herokuapp.com/",
+            pathRewrite: { "^/api": "" }
+        },
         "/external/ip": {
             target: "http://ip-api.com/json/",
             pathRewrite: { "^/external/ip": "" }
