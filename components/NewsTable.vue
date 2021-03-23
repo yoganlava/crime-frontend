@@ -1,64 +1,96 @@
 <template>
   <div
-    class="max-w-sm bg-white border-2 border-gray-300 p-3 rounded-md tracking-wide shadow-lg news-table"
+    class="bg-white border-2 border-gray-300 p-3 rounded-md tracking-wide shadow-lg news-table"
   >
-    <button
-      class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center ml-2"
-      @click="click"
-    > Test </button>
-    <table class="table-auto border">
-      <thead>
-        <tr>
-          <th>Live news in {City}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="border">
-          <td>Man dead in {City}, Dog to blame???</td>
-        </tr>
-        <tr class="border">
-          <td>{City} has been named the worst city in the UK</td>
-        </tr>
-      </tbody>
-    </table>
+    <h1 class="table-title">Live news in London</h1>
+    <div v-for="news, i in currentNews" :key="i">
+        <news-article :title="news.title" :description="news.description" :url="news.url"></news-article>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
-@Component
+
+@Component({
+  components: {
+    NewsArticle: () => import("~/components/NewsArticle.vue")
+  }
+})
 export default class NewsTable extends Vue {
   channels = {
     NewsChannel: {
       received: this.parseMessage
     }
   };
+  currentNews: Array<any> = [];
 
   mounted() {
     this.$cable.subscribe({
       channel: "NewsChannel"
     });
-  }
+    setTimeout(() => {
+      this.$cable.perform({
+        channel: "NewsChannel",
+        action: "request_update",
+        data: {
+          location: "london",
+          source: "google"
+        }
+      });
 
-  click() {
-    this.$cable.perform({
-      channel: "NewsChannel",
-      action: "initialise_source",
-      data: {
-        source: "google",
-        location: "london"
-      }
-    });
+      setInterval(() => {
+        this.$cable.perform({
+          channel: "NewsChannel",
+          action: "request_update",
+          data: {
+            location: "london",
+            source: "google"
+          }
+        });
+      }, 50000);
+    }, 2000);
   }
 
   parseMessage(data) {
-    console.log(data);
+    if (!this.currentNews.length) {
+      this.currentNews = data;
+      return;
+    }
+    this.currentNews.unshift(...this.getDifference(data, this.currentNews));
+    console.log(this.currentNews);
+
+    this.$forceUpdate();
   }
-}
+
+  getDifference(arr1: Array<any>, arr2: Array<any>) {
+    return arr1.filter(o => this.indexOfObject(arr2, o) == -1);
+  }
+
+  indexOfObject(arr: Array<any>, object: Object) {
+    for (let i in arr) if (this.isNewsObjectEqual(arr[i], object)) return i;
+    return -1;
+  }
+
+  isNewsObjectEqual(o1: any, o2: any) {
+    return (
+      o1.title === o2.title &&
+      o1.description === o2.description &&
+      o1.url === o2.url
+    );
+  }
+}8
 </script>
 
 <style>
 .news-table {
+  text-align: center;
   margin: 5% 5%;
+  max-width: 40vw;
+}
+
+.table-title {
+  font-weight: 700;
+  justify-self: center;
 }
 </style>
