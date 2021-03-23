@@ -30,6 +30,7 @@ export default class MapContainer extends Vue {
   @Prop() ip: string;
   lastLayer: L.Polygon | L.Rectangle;
   crimeGroup: MarkerClusterGroup;
+  crimeObjects: Array<any>;
   stationGroup: L.LayerGroup;
   fullscreen: boolean = false;
   darkMode: boolean = false;
@@ -120,24 +121,67 @@ export default class MapContainer extends Vue {
       name: "filter",
       title: "Filter By",
       className: "icon-filter",
+      // Very inefficient but cba
       actions: [
         {
           text: "All",
-          onClick: () => {
-            console.log("ALL");
-          }
+          onClick: () => this.filterMarkers("all")
         },
         {
           text: "Anti Social Behavior",
-          onClick: () => {
-            console.log("Anti Social Behavior");
-          }
+          onClick: () => this.filterMarkers("anti-social-behaviour")
         },
         {
           text: "Bicycle Theft",
-          onClick: () => {
-            console.log("Bicycle Theft");
-          }
+          onClick: () => this.filterMarkers("bicycle-theft")
+        },
+        {
+          text: "Burglary",
+          onClick: () => this.filterMarkers("burglary")
+        },
+        {
+          text: "Criminal damage and arson",
+          onClick: () => this.filterMarkers("criminal-damage-arson")
+        },
+        {
+          text: "Drugs",
+          onClick: () => this.filterMarkers("drugs")
+        },
+        {
+          text: "Other theft",
+          onClick: () => this.filterMarkers("other-theft")
+        },
+        {
+          text: "Possession of weapons",
+          onClick: () => this.filterMarkers("possession-of-weapons")
+        },
+        {
+          text: "Public order",
+          onClick: () => this.filterMarkers("public-order")
+        },
+        {
+          text: "Robbery",
+          onClick: () => this.filterMarkers("robbery")
+        },
+        {
+          text: "Shoplifting",
+          onClick: () => this.filterMarkers("shoplifting")
+        },
+        {
+          text: "Theft from the person",
+          onClick: () => this.filterMarkers("theft-from-the-person")
+        },
+        {
+          text: "Vehicle crime",
+          onClick: () => this.filterMarkers("vehicle-crime")
+        },
+        {
+          text: "Violence and sexual offences",
+          onClick: () => this.filterMarkers("violent-crime")
+        },
+        {
+          text: "Other crime",
+          onClick: () => this.filterMarkers("other-crime")
         }
       ],
       block: "options"
@@ -155,6 +199,15 @@ export default class MapContainer extends Vue {
     });
   }
 
+  filterMarkers(category) {
+    this.crimeGroup.clearLayers();
+    category == "all"
+      ? this.crimeObjects.forEach(this.markCrime)
+      : this.crimeObjects
+          .filter(crime => crime.category == category)
+          .forEach(this.markCrime);
+  }
+
   // Sends polygon to crime api and marks all the crimes recieved on the map
   async markCrimesInLastLayer() {
     this.crimeGroup.clearLayers();
@@ -163,7 +216,12 @@ export default class MapContainer extends Vue {
         ":"
       )}&date=2021-01`
     );
-    crimes.forEach(crime => {
+    this.crimeObjects = crimes;
+    crimes.forEach(this.markCrime);
+  }
+
+  markCrime(crime) {
+    {
       let text =
         `
         <b>Crime Type:</b> ${crime.category
@@ -193,7 +251,7 @@ export default class MapContainer extends Vue {
         crime.category,
         this.crimeGroup
       );
-    });
+    }
   }
 
   async loadPoliceStations() {
@@ -365,6 +423,7 @@ export default class MapContainer extends Vue {
 
 .button-container.active .leaflet-pm-actions-container {
   display: grid;
+  z-index: 10;
 }
 
 .fullscreen {
@@ -379,13 +438,13 @@ export default class MapContainer extends Vue {
 .map-container {
   z-index: 0;
   flex-basis: 100%;
-  margin-left: 10%;
-  margin-right: 10%;
+  margin-left: 5%;
+  margin-right: 5%;
   background-color: green;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 400px;
+  min-height: 660px;
 }
 </style>
