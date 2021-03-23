@@ -44,7 +44,7 @@ export default class NewsTable extends Vue {
   };
   currentNews: Array<any> = [];
   pageNum: number = 1;
-  limit: number = 5;
+  limit: number = 4;
 
   mounted() {
     this.$cable.subscribe({
@@ -122,7 +122,7 @@ export default class NewsTable extends Vue {
 .news-table {
   text-align: center;
   margin: 5% 5%;
-  max-width: 40vw;
+  max-width: 60vw;
 }
 
 .table-title {

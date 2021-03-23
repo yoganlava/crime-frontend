@@ -3,7 +3,7 @@
     :href="url"
   >
     <div class="news-article-container my-3">
-      <h1 class="news-title">
+      <h1 class="news-title py-1">
         {{title}}
       </h1>
       <p>
@@ -30,7 +30,7 @@ export default class NewsArticle extends Vue {
   text-align: initial;
   border: 1px solid #dadce0;
   border-radius: 8px;
-  padding: 5px;
+  padding: 10px;
 }
 
 .news-article-container:hover {
