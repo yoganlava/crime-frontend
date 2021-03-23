@@ -80,6 +80,14 @@ export default class MapContainer extends Vue {
         : 1;
     });
     console.log(crimeMap);
+    let crimeSummary = "<b>Crime Summary: </b>\n";
+
+    for (const [type, count] of Object.entries(crimeMap))
+      crimeSummary += `<p><b>${type
+        .split("-")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")}: </b>${count}</p>\n`;
+
     this.lastLayer.bindPopup(
       `<p><b>Amount of crimes: </b>${this.crimeGroup.getLayers().length}</p>\n
       <p><b>Most frequent crime: </b>${Object.keys(crimeMap)
@@ -89,6 +97,7 @@ export default class MapContainer extends Vue {
         .split("-")
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ")}</p>
+        ${crimeSummary}
       `
     );
   }
