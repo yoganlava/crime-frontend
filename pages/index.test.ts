@@ -1,5 +1,5 @@
 import { get, setupTest } from "@nuxt/test-utils";
-import buildJestConfig from "../test/setupConfig"
+import buildJestConfig from "../test/setupConfig";
 
 describe("ssr page rendering", () => {
   setupTest(buildJestConfig());

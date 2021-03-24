@@ -46,20 +46,20 @@ import { Vue, Component } from "nuxt-property-decorator";
   }
 })
 export default class Index extends Vue {
-  ip: string = '8.8.8.8';
+  ip: string = "8.8.8.8";
   // Get real ip from x-forwarded-for header due to heroku tunneling res through proxy
-  async asyncData({req}) {
-    if (req == undefined)
-      return
+  async asyncData({ req }) {
+    if (req == undefined) return;
     return {
-      ip: req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'] : '8.8.8.8'
-    }
+      ip: req.headers["x-forwarded-for"]
+        ? req.headers["x-forwarded-for"]
+        : "8.8.8.8"
+    };
   }
 
   openNewsModal() {
     this.$root.$emit("toggleNewsModal");
   }
-
 }
 </script>
 

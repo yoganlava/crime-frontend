@@ -126,9 +126,11 @@ export default class NavBar extends Vue {
 
   @Watch("globalDarkMode")
   toggleDarkMode() {
-    this.$root.$emit("triggerDarkMode");
+    this.$root.$emit("triggerDarkMode", this.globalDarkMode);
     document.body.classList.toggle("dark");
-    document.documentElement.style['color-scheme'] = this.globalDarkMode ? 'light dark' : "light";
+    document.documentElement.style["color-scheme"] = this.globalDarkMode
+      ? "light dark"
+      : "light";
   }
 }
 </script>
@@ -141,11 +143,11 @@ export default class NavBar extends Vue {
 .toggle-checkbox:checked {
   @apply: right-0 border-green-400;
   right: 0;
-  border-color: darkgray;
+  border-color: rgb(66, 66, 66);
 }
 .toggle-checkbox:checked + .toggle-label {
   @apply: bg-green-400;
-  background-color: darkgray;
+  background-color: rgb(66, 66, 66);
 }
 
 .nav-title {

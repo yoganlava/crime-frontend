@@ -23,7 +23,11 @@
                 placeholder="Search City"
                 v-on:keyup.enter="toggleModal"
               />
-              <button type="submit" class="absolute right-0 top-0 mt-5 mr-7" @click="toggleModal">
+              <button
+                type="submit"
+                class="absolute right-0 top-0 mt-5 mr-7"
+                @click="toggleModal"
+              >
                 <svg
                   class="text-gray-600 h-4 w-4 fill-current"
                   xmlns="http://www.w3.org/2000/svg"

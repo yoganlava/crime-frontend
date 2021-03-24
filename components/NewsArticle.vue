@@ -1,13 +1,13 @@
 <template>
-  <a
-    :href="url"
-  >
-    <div class="news-article-container my-3 dark:border-gray-500 dark:hover:bg-gray-700">
+  <a :href="url">
+    <div
+      class="news-article-container my-3 dark:border-gray-500 dark:hover:bg-gray-700"
+    >
       <h1 class="news-title py-1">
-        {{title}}
+        {{ title }}
       </h1>
       <p>
-        {{description}}
+        {{ description }}
       </p>
     </div>
   </a>
@@ -18,9 +18,9 @@ import { Vue, Component, Prop } from "nuxt-property-decorator";
 
 @Component
 export default class NewsArticle extends Vue {
-    @Prop() title: string
-    @Prop() description: string
-    @Prop() url: string
+  @Prop() title: string;
+  @Prop() description: string;
+  @Prop() url: string;
 }
 </script>
 

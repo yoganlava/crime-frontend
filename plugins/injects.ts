@@ -1,8 +1,8 @@
-import { Plugin } from '@nuxt/types'
+import { Plugin } from "@nuxt/types";
 
-declare module 'vue/types/vue' {
+declare module "vue/types/vue" {
   interface Vue {
-    $http: any,
-    $toast: any
+    $http: any;
+    $toast: any;
   }
 }

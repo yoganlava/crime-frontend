@@ -50,9 +50,9 @@ export default class MapContainer extends Vue {
     this.$root.$on("goToAddress", coords => {
       this.goToAddress(coords);
     });
-    this.$root.$on("triggerDarkMode", () => {
-      this.darkMode = true;
-    })
+    this.$root.$on("triggerDarkMode", darkMode => {
+      this.darkMode = darkMode;
+    });
   }
 
   // Resolves all crimes when a polygon has been created while deleting the old polygons

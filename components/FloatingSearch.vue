@@ -7,7 +7,11 @@
       type="search"
       placeholder="Search address"
     />
-    <button type="submit" class="absolute right-0 top-0 mt-5 mr-4" @click="search">
+    <button
+      type="submit"
+      class="absolute right-0 top-0 mt-5 mr-4"
+      @click="search"
+    >
       <svg
         class="text-gray-600 h-4 w-4 fill-current"
         xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +42,9 @@ export default class FloatingSearch extends Vue {
   address: string = "";
   // Get geo location of specified query and emit goToAddress message
   async search() {
-    let geocode = await this.$http.$get(`https://geocode.xyz/${this.address.replaceAll(" ", "+")}?json=1`);
+    let geocode = await this.$http.$get(
+      `https://geocode.xyz/${this.address.replaceAll(" ", "+")}?json=1`
+    );
     this.$root.$emit("goToAddress", [geocode.latt, geocode.longt]);
   }
 }

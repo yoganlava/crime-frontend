@@ -15,7 +15,23 @@
         Crime list
       </h1>
       <div
-        v-for="(name, i) in ['All Crime', 'Anti Social Behaviour', 'Bicycle Theft', 'Burglary', 'Criminal Damage Arson', 'Drugs', 'Other Theft', 'Possession Of Weapons', 'Public Order', 'Robbery', 'Shoplifting', 'Theft From The Person', 'Vehicle Crime', 'Violent Crime', 'Other Crime']"
+        v-for="(name, i) in [
+          'All Crime',
+          'Anti Social Behaviour',
+          'Bicycle Theft',
+          'Burglary',
+          'Criminal Damage Arson',
+          'Drugs',
+          'Other Theft',
+          'Possession Of Weapons',
+          'Public Order',
+          'Robbery',
+          'Shoplifting',
+          'Theft From The Person',
+          'Vehicle Crime',
+          'Violent Crime',
+          'Other Crime'
+        ]"
         :key="i"
       >
         <crime-percentage-bar
@@ -23,7 +39,7 @@
           :name="name"
         ></crime-percentage-bar>
       </div>
-    </div>  
+    </div>
   </div>
 </template>
 
