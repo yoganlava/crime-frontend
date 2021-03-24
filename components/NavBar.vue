@@ -71,6 +71,26 @@
             </div>
           </div>
         </div>
+        <div
+          class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0"
+        >
+          <div
+            class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
+          >
+            <input
+              type="checkbox"
+              v-model="globalDarkMode"
+              name="toggle"
+              id="toggle"
+              class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+            />
+            <label
+              for="toggle"
+              class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
+            ></label>
+          </div>
+          <label for="toggle" class="text-xs text-gray-300">Dark Mode</label>
+        </div>
       </div>
     </div>
     <div class="sm:hidden" id="mobile-menu">
@@ -99,12 +119,35 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from "nuxt-property-decorator";
+import { Vue, Component, Watch } from "nuxt-property-decorator";
 @Component
-export default class NavBar extends Vue {}
+export default class NavBar extends Vue {
+  globalDarkMode: boolean = false;
+
+  @Watch("globalDarkMode")
+  toggleDarkMode() {
+    this.$root.$emit("triggerDarkMode");
+    document.body.classList.toggle("dark");
+    document.documentElement.style['color-scheme'] = this.globalDarkMode ? 'light dark' : "light";
+  }
+}
 </script>
 
-<style>
+<style lang="postcss">
+/* :root {
+  color-scheme: light dark;
+} */
+
+.toggle-checkbox:checked {
+  @apply: right-0 border-green-400;
+  right: 0;
+  border-color: darkgray;
+}
+.toggle-checkbox:checked + .toggle-label {
+  @apply: bg-green-400;
+  background-color: darkgray;
+}
+
 .nav-title {
   color: white;
   font-weight: 700;

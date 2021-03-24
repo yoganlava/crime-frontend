@@ -2,7 +2,7 @@
   <a
     :href="url"
   >
-    <div class="news-article-container my-3">
+    <div class="news-article-container my-3 dark:border-gray-500 dark:hover:bg-gray-700">
       <h1 class="news-title py-1">
         {{title}}
       </h1>
@@ -21,7 +21,6 @@ export default class NewsArticle extends Vue {
     @Prop() title: string
     @Prop() description: string
     @Prop() url: string
-
 }
 </script>
 
