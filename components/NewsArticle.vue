@@ -1,5 +1,5 @@
 <template>
-  <a :href="url">
+  <a :href="url" target="_blank">
     <div
       class="news-article-container my-3 dark:border-gray-500 dark:hover:bg-gray-700"
     >

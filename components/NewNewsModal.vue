@@ -21,12 +21,13 @@
                 class="border-2 border-gray-300 bg-white h-10 px-5 pr-64 rounded-lg text-sm focus:outline-none"
                 type="search"
                 placeholder="Search City"
-                v-on:keyup.enter="toggleModal"
+                v-on:keyup.enter="addCity"
+                v-model="location"
               />
               <button
                 type="submit"
                 class="absolute right-0 top-0 mt-5 mr-7"
-                @click="toggleModal"
+                @click="addCity"
               >
                 <svg
                   class="text-gray-600 h-4 w-4 fill-current"
@@ -60,6 +61,7 @@ import { Vue, Component } from "nuxt-property-decorator";
 @Component
 export default class NewNewsModal extends Vue {
   active: boolean = false;
+  location: string = "";
 
   mounted() {
     this.$root.$on("toggleNewsModal", this.toggleModal);
@@ -67,7 +69,11 @@ export default class NewNewsModal extends Vue {
 
   toggleModal() {
     this.active = !this.active;
-    console.log(this.active);
+  }
+
+  addCity() {
+    this.toggleModal();
+    this.$root.$emit("addCityNewsFeed", this.location);
   }
 }
 </script>

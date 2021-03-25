@@ -25,8 +25,8 @@
             <span>Add City</span>
           </button>
         </div>
-        <div class="news-table-container" v-for="i in [1]" :key="i">
-          <news-table></news-table>
+        <div class="news-table-container" v-for="news, i in newsTables" :key="i">
+          <news-table :location="news.location" :source="news.source"></news-table>
         </div>
       </div>
     </div>
@@ -35,6 +35,11 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
+
+interface NewsTable {
+  location: string;
+  source: string;
+}
 
 @Component({
   components: {
@@ -46,6 +51,13 @@ import { Vue, Component } from "nuxt-property-decorator";
   }
 })
 export default class Index extends Vue {
+  newsTables: Array<NewsTable> = [
+    // TODO REPLACE WITH USERS CITY LATER
+    {
+      location: "London",
+      source: "google"
+    }
+  ];
   ip: string = "8.8.8.8";
   // Get real ip from x-forwarded-for header due to heroku tunneling res through proxy
   async asyncData({ req }) {
@@ -57,8 +69,19 @@ export default class Index extends Vue {
     };
   }
 
+  mounted() {
+    this.$root.$on("addCityNewsFeed", this.addCityNewsFeed);
+  }
+
   openNewsModal() {
     this.$root.$emit("toggleNewsModal");
+  }
+
+  addCityNewsFeed(location: string) {
+    this.newsTables.push({
+      location: location,
+      source: "google"
+    });
   }
 }
 </script>

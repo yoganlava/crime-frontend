@@ -2,7 +2,7 @@
   <div
     class="bg-white dark:bg-gray-800 dark:text-gray-300 dark:border-gray-500 border-2 border-gray-300 p-3 rounded-md tracking-wide shadow-lg news-table"
   >
-    <h1 class="table-title">Live news in London</h1>
+    <h1 class="table-title">Live news in {{location}}</h1>
     <div v-for="(news, i) in paginatedNews()" :key="i">
       <news-article
         :title="news.title"
@@ -60,7 +60,13 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from "nuxt-property-decorator";
+import { Vue, Component, Prop } from "nuxt-property-decorator";
+
+interface NewsArticle {
+  title: string;
+  description: string;
+  url: string;
+}
 
 @Component({
   components: {
@@ -68,12 +74,14 @@ import { Vue, Component } from "nuxt-property-decorator";
   }
 })
 export default class NewsTable extends Vue {
+  @Prop() location: string;
+  @Prop() source: string;
   channels = {
     NewsChannel: {
       received: this.parseMessage
     }
   };
-  currentNews: Array<any> = [];
+  currentNews: Array<NewsArticle> = [];
   pageNum: number = 1;
   limit: number = 4;
 
@@ -86,8 +94,8 @@ export default class NewsTable extends Vue {
         channel: "NewsChannel",
         action: "request_update",
         data: {
-          location: "london",
-          source: "google"
+          location: this.location,
+          source: this.source
         }
       });
 
@@ -115,16 +123,16 @@ export default class NewsTable extends Vue {
     this.$forceUpdate();
   }
 
-  getDifference(arr1: Array<any>, arr2: Array<any>) {
+  getDifference(arr1: Array<NewsArticle>, arr2: Array<NewsArticle>) {
     return arr1.filter(o => this.indexOfObject(arr2, o) == -1);
   }
 
-  indexOfObject(arr: Array<any>, object: Object) {
+  indexOfObject(arr: Array<NewsArticle>, object: NewsArticle) {
     for (let i in arr) if (this.isNewsObjectEqual(arr[i], object)) return i;
     return -1;
   }
 
-  isNewsObjectEqual(o1: any, o2: any) {
+  isNewsObjectEqual(o1: NewsArticle, o2: NewsArticle) {
     return (
       o1.title === o2.title &&
       o1.description === o2.description &&
