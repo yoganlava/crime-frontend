@@ -43,11 +43,7 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
-@Component({
-  components: {
-    CityAnalysis: () => import("~/components/CityAnalysis.vue")
-  }
-})
+@Component
 export default class Analytics extends Vue {}
 </script>
 

@@ -77,6 +77,7 @@ export default class MapContainer extends Vue {
 
   analyseLastLayer() {
     var crimeMap = {};
+    // ! Probably change this to use crime objects
     this.crimeGroup.getLayers().forEach((crimeMarker: any) => {
       crimeMap[crimeMarker.options.title] = crimeMap[crimeMarker.options.title]
         ? crimeMap[crimeMarker.options.title] + 1
@@ -226,7 +227,7 @@ export default class MapContainer extends Vue {
     let crimes: Array<any> = await this.$http.$get(
       `/api/crime/crime?poly=${this.getLastPolygonCoords().join(
         ":"
-      )}&date=2021-01`
+      )}`
     );
     this.crimeObjects = crimes;
     crimes.forEach(this.markCrime);

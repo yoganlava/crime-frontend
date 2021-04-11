@@ -89,6 +89,7 @@ export default class NewsTable extends Vue {
     this.$cable.subscribe({
       channel: "NewsChannel"
     });
+    
     setTimeout(() => {
       this.$cable.perform({
         channel: "NewsChannel",

@@ -41,15 +41,7 @@ interface NewsTable {
   source: string;
 }
 
-@Component({
-  components: {
-    NavBar: () => import("~/components/NavBar.vue"),
-    FloatingSearch: () => import("~/components/FloatingSearch.vue"),
-    MapContainer: () => import("~/components/MapContainer.vue"),
-    NewsTable: () => import("~/components/NewsTable.vue"),
-    NewNewsModal: () => import("~/components/NewNewsModal.vue")
-  }
-})
+@Component
 export default class Index extends Vue {
   newsTables: Array<NewsTable> = [
     // TODO REPLACE WITH USERS CITY LATER

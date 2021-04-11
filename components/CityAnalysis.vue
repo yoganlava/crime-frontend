@@ -7,6 +7,10 @@
         London
       </h1>
       <p class="pt-4">Amount of crimes in the last 12 months: <b>81723</b></p>
+      <line-chart
+        v-if="showLine"
+        :data="{ labels: Array.from(months), datasets }"
+      />
     </div>
     <div class="px-6">
       <h1
@@ -45,10 +49,49 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
-@Component({
-  components: {
-    CrimePercentageBar: () => import("~/components/CrimePercentageBar.vue")
+
+interface Crime {
+  id: number;
+  location_id: number;
+  name: string;
+  value: number;
+  created_at: string;
+  updated_at: string;
+  month: string;
+}
+
+@Component
+export default class CrimeAnalysis extends Vue {
+  months: Set<string> = new Set();
+  datasets = [];
+  showLine: boolean = false;
+
+  async mounted() {
+    let crimesList: Crime[] = (
+      await this.$http.$get("/api/statistics/city?name=reading")
+    ).reverse();
+    let crimeNames: Set<string> = new Set();
+
+    crimesList.forEach(crime => {
+      this.months.add(crime.month);
+      crimeNames.add(crime.name);
+    });
+
+    crimeNames.forEach(name => {
+      let r = Math.floor(Math.random() * 256),
+        g = Math.floor(Math.random() * 256),
+        b = Math.floor(Math.random() * 256);
+      this.datasets.push({
+        label: name,
+        borderColor: `rgb(${r},${g},${b})`,
+        backgroundColor: `rgba(${r},${g},${b}, 0.1)`,
+        data: crimesList
+          .filter(crime => crime.name == name)
+          .map(crime => crime.value)
+      });
+    });
+
+    this.showLine = true;
   }
-})
-export default class CrimeAnalysis extends Vue {}
+}
 </script>

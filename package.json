@@ -20,6 +20,7 @@
         "@types/actioncable": "^5.2.3",
         "actioncable": "^5.2.4-5",
         "actioncable-vue": "^2.4.6",
+        "chart.js": "^2.9.4",
         "core-js": "^3.8.3",
         "leaflet.markercluster": "^1.5.0",
         "nuxt": "^2.14.12",
@@ -27,7 +28,8 @@
         "nuxt-property-decorator": "^2.9.1",
         "nuxt-tailvue": "^1.0.68",
         "patch-package": "^6.4.6",
-        "ts-jest": "^26.5.4"
+        "ts-jest": "^26.5.4",
+        "vue-chartjs": "^3.5.1"
     },
     "devDependencies": {
         "@nuxt/test-utils": "^0.2.0",
