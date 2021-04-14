@@ -1,18 +1,15 @@
 <template>
   <div class="mt-10 text-left pl-16 divide-x-2 grid grid-cols-2">
-    <div class="px-6">
+    <div class="px-6" v-if="!loading">
       <h1
         class="text-2xl font-bold leading-7 lg:text-6xl sm:text-4xl md:text-5xl text-gray-900"
       >
-        London
+        {{cityName}}
       </h1>
       <p class="pt-4">Amount of crimes in the last 12 months: <b>81723</b></p>
-      <line-chart
-        v-if="showLine"
-        :data="{ labels: Array.from(months), datasets }"
-      />
+      <line-chart :data="{ labels: Array.from(months), datasets }" />
     </div>
-    <div class="px-6">
+    <div v-if="!loading" class="px-6">
       <h1
         class="text-2xl font-bold leading-7 lg:text-6xl sm:text-4xl md:text-5xl text-gray-900"
       >
@@ -44,6 +41,7 @@
         ></crime-percentage-bar>
       </div>
     </div>
+    <bar-chart-loader v-else></bar-chart-loader>
   </div>
 </template>
 
@@ -64,11 +62,21 @@ interface Crime {
 export default class CrimeAnalysis extends Vue {
   months: Set<string> = new Set();
   datasets = [];
-  showLine: boolean = false;
+  loading: boolean = true;
+  cityName: string;
 
   async mounted() {
+    this.$root.$on("searchCityStatistics", this.searchCityStatistics);
+    await this.searchCityStatistics("Reading");
+  }
+
+  async searchCityStatistics(cityName: string) {
+    this.loading = true;
+    this.cityName = cityName;
+    this.datasets = [];
+    this.months = new Set();
     let crimesList: Crime[] = (
-      await this.$http.$get("/api/statistics/city?name=reading")
+      await this.$http.$get("/api/statistics/city?name=" + cityName)
     ).reverse();
     let crimeNames: Set<string> = new Set();
 
@@ -91,7 +99,7 @@ export default class CrimeAnalysis extends Vue {
       });
     });
 
-    this.showLine = true;
+    this.loading = false;
   }
 }
 </script>

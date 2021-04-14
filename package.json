@@ -28,6 +28,8 @@
         "nuxt-property-decorator": "^2.9.1",
         "nuxt-tailvue": "^1.0.68",
         "patch-package": "^6.4.6",
+        "sass": "^1.32.8",
+        "sass-loader": "^10.1.1",
         "ts-jest": "^26.5.4",
         "vue-chartjs": "^3.5.1"
     },

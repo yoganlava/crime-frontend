@@ -13,8 +13,14 @@
             class="border-2 border-gray-300 bg-white h-10 px-5 pr-64 rounded-lg text-sm focus:outline-none"
             type="search"
             placeholder="Search City"
+            v-model="city"
+            v-on:keyup.enter="searchCity"
           />
-          <button type="submit" class="absolute right-0 top-0 mt-5 mr-4">
+          <button
+            type="submit"
+            class="absolute right-0 top-0 mt-5 mr-4"
+            @click="searchCity"
+          >
             <svg
               class="text-gray-600 h-4 w-4 fill-current"
               xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +50,13 @@
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
 @Component
-export default class Analytics extends Vue {}
+export default class Analytics extends Vue {
+  city: string = "";
+
+  searchCity() {
+    this.$root.$emit("searchCityStatistics", this.city);
+  }
+}
 </script>
 
 <style>
