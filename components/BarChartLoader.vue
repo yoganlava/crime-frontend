@@ -82,17 +82,17 @@ h2 {
 }
 .loader2 {
   @include bar;
-  animation-delay: 0.4s;
+  animation-delay: -0.4s;
   background: #de2890;
 }
 .loader3 {
   @include bar;
-  animation-delay: 0.8s;
+  animation-delay: -0.8s;
   background: #ff969f;
 }
 .loader4 {
   @include bar;
-  animation-delay: 0.6s;
+  animation-delay: -0.6s;
   background: #2d65c5;
 }
 </style>

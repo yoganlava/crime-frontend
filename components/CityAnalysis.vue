@@ -4,9 +4,10 @@
       <h1
         class="text-2xl font-bold leading-7 lg:text-6xl sm:text-4xl md:text-5xl text-gray-900"
       >
-        {{cityName}}
+        {{ cityName }}
       </h1>
-      <p class="pt-4">Amount of crimes in the last 12 months: <b>81723</b></p>
+      <!-- Make last {{ X }} months more robust -->
+      <p class="pt-4">Amount of crimes in the last {{datasets[0].data.length}} months: <b>{{ totalCrimeCount() }}</b></p>
       <line-chart :data="{ labels: Array.from(months), datasets }" />
     </div>
     <div v-if="!loading" class="px-6">
@@ -15,7 +16,7 @@
       >
         Crime list
       </h1>
-      <div
+      <!-- <div
         v-for="(name, i) in [
           'All Crime',
           'Anti Social Behaviour',
@@ -34,10 +35,12 @@
           'Other Crime'
         ]"
         :key="i"
-      >
+      > -->
+      <div v-for="(data, i) in datasets" :key="i">
         <crime-percentage-bar
-          :percentage="Math.floor(Math.random() * 101)"
-          :name="name"
+          :current="data.data.reduce((a, b) => a + b, 0)"
+          :total="totalCrimeCount()"
+          :name="data.label"
         ></crime-percentage-bar>
       </div>
     </div>
@@ -100,6 +103,13 @@ export default class CrimeAnalysis extends Vue {
     });
 
     this.loading = false;
+    console.log(this.totalCrimeCount());
+  }
+
+  totalCrimeCount() {
+    return this.datasets.reduce((_, curr) => {
+      return _ + curr.data.reduce((a, b) => a + b, 0);
+    }, 0);
   }
 }
 </script>
