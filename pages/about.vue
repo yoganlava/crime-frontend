@@ -6,7 +6,7 @@
       </h1>
 
     </div>
-    <div class=" mx-auto" style="width: 50%;">
+    <div class="mx-auto" style="width: 50%">
       <p class="text-center">
         This is a free tool that provides a way to look at crime in different locations.
         This information can be used for a plethora of purposes by many people, such as looking at crime
@@ -17,7 +17,40 @@
       </p>
     </div>
 
-    <div class="flex mt-8 mb-2 mx-auto justify-center" style="width: 60%;">
+    <div class="flex mt-8 mx-auto justify-center" style="width: 50%">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xm sm:truncate">
+        Features
+      </h2>
+    </div>
+    
+    <div class="flex mt-2 mx-auto justify-center" style="width: 50%">
+      <h3 class="font-bold text-gray-900 sm:text-3xm sm:truncate" style="float:left">
+        Crime Map:&nbsp;
+      </h3>
+      <p>
+        Offers data on criminal activity within a given location using the provided map.
+      </p>
+    </div>
+
+    <div class="flex mt-2 mx-auto justify-center" style="width: 50%">
+      <h3 class="font-bold text-gray-900 sm:text-3xm sm:truncate" style="float:left">
+        Live News:&nbsp;
+      </h3>
+      <p>
+        this is shown directly to you based on the location you enter. This can be found underneath the map.
+      </p>
+    </div>
+
+    <div class="flex mt-2 mx-auto justify-center" style="width: 50%">
+      <h3 class="font-bold text-gray-900 sm:text-3xm sm:truncate" style="float:left">
+        Analytics:&nbsp;
+      </h3>
+      <p>
+        An analytics page is offered to lay out more detailed statistics of a specified area.
+      </p>
+    </div>
+
+    <div class="flex mt-8 mb-2 mx-auto justify-center" style="width: 60%">
       <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xm sm:truncate">
       Credits
       </h2>
