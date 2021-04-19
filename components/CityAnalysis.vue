@@ -6,7 +6,7 @@
       >
         {{ cityName }}
       </h1>
-      <!-- Make last {{ X }} months more robust -->
+      <!-- TODO Make last {{ X }} months more robust -->
       <p class="pt-4">Amount of crimes in the last {{datasets[0].data.length}} months: <b>{{ totalCrimeCount() }}</b></p>
       <line-chart :data="{ labels: Array.from(months), datasets }" />
     </div>
@@ -16,26 +16,6 @@
       >
         Crime list
       </h1>
-      <!-- <div
-        v-for="(name, i) in [
-          'All Crime',
-          'Anti Social Behaviour',
-          'Bicycle Theft',
-          'Burglary',
-          'Criminal Damage Arson',
-          'Drugs',
-          'Other Theft',
-          'Possession Of Weapons',
-          'Public Order',
-          'Robbery',
-          'Shoplifting',
-          'Theft From The Person',
-          'Vehicle Crime',
-          'Violent Crime',
-          'Other Crime'
-        ]"
-        :key="i"
-      > -->
       <div v-for="(data, i) in datasets" :key="i">
         <crime-percentage-bar
           :current="data.data.reduce((a, b) => a + b, 0)"
@@ -82,6 +62,16 @@ export default class CrimeAnalysis extends Vue {
       await this.$http.$get("/api/statistics/city?name=" + cityName)
     ).reverse();
     let crimeNames: Set<string> = new Set();
+
+    if (crimesList.length == 0){
+      this.$toast.show({
+        type: "danger",
+        title: "Error",
+        message: "No data available, please try again in a few minutes"
+      });
+      return
+    }
+      
 
     crimesList.forEach(crime => {
       this.months.add(crime.month);

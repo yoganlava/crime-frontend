@@ -31,21 +31,76 @@
         />
       </svg>
     </button>
+    <div
+      class="absolute w-full z-50 bg-white border border-gray-300 mt-1 mh-48 overflow-hidden overflow-y-scroll rounded-md shadow-md"
+      v-if="suggestions.length"
+    >
+      <ul class="py-1">
+        <li
+          v-for="(suggestion, i) in suggestions"
+          :key="i"
+          class="px-3 py-2 cursor-pointer hover:bg-gray-200"
+          @click="onSuggestionClick(suggestion)"
+        >
+          <!-- <b>Read</b>ing -->
+          <!-- {{ highlightSuggestionTitle(suggestion) }} -->
+          <p v-html="highlightSuggestionTitle(suggestion)"></p>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component } from "nuxt-property-decorator";
+import { Vue, Component, Watch } from "nuxt-property-decorator";
 
 @Component
 export default class FloatingSearch extends Vue {
   address: string = "";
+  suggestions = [];
+  searching = false;
   // Get geo location of specified query and emit goToAddress message
   async search() {
     let geocode = await this.$http.$get(
       `https://geocode.xyz/${this.address.replaceAll(" ", "+")}?json=1`
     );
     this.$root.$emit("goToAddress", [geocode.latt, geocode.longt]);
+  }
+
+  @Watch("address")
+  async autocomplete() {
+    if (!this.searching) {
+      setTimeout(async () => {
+        this.searching = true;
+        this.suggestions = [];
+        let res = await this.$http.$get(
+          `/api/autocomplete?q=${this.address.replaceAll(" ", "+")}`
+        );
+        this.suggestions = res.items;
+        this.searching = false;
+
+      }, 1000);
+    }
+  }
+
+  highlightSuggestionTitle(suggestion) {
+    let string = suggestion.title;
+    for (let highlight of suggestion.highlights.title) {
+      string = this.insertInto(
+        this.insertInto(string, highlight.start, "<b>"),
+        highlight.end + 3,
+        "</b>"
+      );
+    }
+    return string;
+  }
+
+  onSuggestionClick(suggestion) {
+    this.address = suggestion.title;
+  }
+
+  insertInto(string: string, index: number, value: string) {
+    return string.substr(0, index) + value + string.substr(index);
   }
 }
 </script>
@@ -64,5 +119,9 @@ export default class FloatingSearch extends Vue {
 .search-container:hover {
   opacity: 1;
   transition: ease-in 0.25s;
+}
+
+.mh-48 {
+  max-height: 10rem;
 }
 </style>
