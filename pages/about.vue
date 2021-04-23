@@ -24,7 +24,7 @@
     </div>
     
     <div class="flex mt-2 mx-auto justify-center" style="width: 50%">
-      <h3 class="font-bold text-gray-900 sm:text-3xm sm:truncate" style="float:left">
+      <h3 class="font-bold text-gray-900 sm:text-3xm" style="float:left">
         Crime Map:&nbsp;
       </h3>
       <p>
@@ -33,7 +33,7 @@
     </div>
 
     <div class="flex mt-2 mx-auto justify-center" style="width: 50%">
-      <h3 class="font-bold text-gray-900 sm:text-3xm sm:truncate" style="float:left">
+      <h3 class="font-bold text-gray-900 sm:text-3xm" style="float:left">
         Live News:&nbsp;
       </h3>
       <p>
@@ -42,7 +42,7 @@
     </div>
 
     <div class="flex mt-2 mx-auto justify-center" style="width: 50%">
-      <h3 class="font-bold text-gray-900 sm:text-3xm sm:truncate" style="float:left">
+      <h3 class="font-bold text-gray-900 sm:text-3xm" style="float:left">
         Analytics:&nbsp;
       </h3>
       <p>
