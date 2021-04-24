@@ -1,9 +1,10 @@
 <template>
   <div
-    class="bg-white dark:bg-gray-800 dark:text-gray-300 dark:border-gray-500 border-2 border-gray-300 p-3 rounded-md tracking-wide shadow-lg news-table"
+    class="bg-white dark:bg-gray-800 dark:text-gray-300 dark:border-gray-500 border-2 border-gray-300 p-3 rounded-md tracking-wide shadow-lg news-table flex flex-col items-center justify-center"
   >
-    <h1 class="table-title">Live news in {{location}}</h1>
-    <div v-for="(news, i) in paginatedNews()" :key="i">
+    <h1 class="table-title">Live news in {{ location }}</h1>
+    <spinning-loader v-if="this.currentNews.length == 0"></spinning-loader>
+    <div v-else v-for="(news, i) in paginatedNews()" :key="i">
       <news-article
         :title="news.title"
         :description="news.description"
@@ -77,11 +78,6 @@ interface NewsArticle {
 export default class NewsTable extends Vue {
   @Prop() location: string;
   @Prop() source: string;
-  channels = {
-    NewsChannel: {
-      received: this.parseMessage
-    }
-  };
   currentNews: Array<NewsArticle> = [];
   pageNum: number = 1;
   limit: number = 4;
@@ -90,20 +86,16 @@ export default class NewsTable extends Vue {
   mounted() {
     this.channel = this.$createConnection(this.parseMessage);
     setTimeout(() => {
-      this.channel.perform("request_update",
-        {
-          location: this.location,
-          source: this.source
-        }
-      );
+      this.channel.perform("request_update", {
+        location: this.location,
+        source: this.source
+      });
 
       setInterval(() => {
-        this.channel.perform("request_update",
-        {
+        this.channel.perform("request_update", {
           location: this.location,
           source: this.source
-        }
-      );
+        });
       }, 50000);
     }, 2000);
   }

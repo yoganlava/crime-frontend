@@ -1,7 +1,7 @@
 <template>
   <a :href="url" target="_blank">
     <div
-      class="news-article-container my-3 dark:border-gray-500 dark:hover:bg-gray-700"
+      class="news-article-container my-2 dark:border-gray-500 dark:hover:bg-gray-700"
     >
       <h1 class="news-title py-1">
         {{ title }}
