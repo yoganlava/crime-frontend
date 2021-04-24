@@ -61,6 +61,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from "nuxt-property-decorator";
+import Actioncable from "actioncable";
 
 interface NewsArticle {
   title: string;
@@ -84,31 +85,25 @@ export default class NewsTable extends Vue {
   currentNews: Array<NewsArticle> = [];
   pageNum: number = 1;
   limit: number = 4;
+  channel: Actioncable.Channel;
 
   mounted() {
-    this.$cable.subscribe({
-      channel: "NewsChannel"
-    });
-    
+    this.channel = this.$createConnection(this.parseMessage);
     setTimeout(() => {
-      this.$cable.perform({
-        channel: "NewsChannel",
-        action: "request_update",
-        data: {
+      this.channel.perform("request_update",
+        {
           location: this.location,
           source: this.source
         }
-      });
+      );
 
       setInterval(() => {
-        this.$cable.perform({
-          channel: "NewsChannel",
-          action: "request_update",
-          data: {
-            location: "london",
-            source: "google"
-          }
-        });
+        this.channel.perform("request_update",
+        {
+          location: this.location,
+          source: this.source
+        }
+      );
       }, 50000);
     }, 2000);
   }

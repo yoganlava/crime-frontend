@@ -1,10 +1,10 @@
 import Vue from "vue";
-import ActionCableVue from "actioncable-vue";
+import Actioncable from "actioncable";
 
-Vue.use(ActionCableVue, {
-  debug: true,
-  debugLevel: "error",
-  connectionUrl: "wss://crime-spotter-backend.herokuapp.com/news",
-  // connectionUrl: 'ws://localhost:3000/news',
-  connectImmediately: true
-});
+Vue.use({
+  install(vue, options) {
+    vue.prototype.$createConnection = func => Actioncable.createConsumer("wss://crime-spotter-backend.herokuapp.com/news").subscriptions.create("NewsChannel", {
+      received: func
+    });
+  }
+})
