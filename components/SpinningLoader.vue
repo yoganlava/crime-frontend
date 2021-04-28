@@ -10,7 +10,7 @@ import { Vue, Component } from "nuxt-property-decorator";
 export default class SpinningLoader extends Vue {}
 </script>
 
-<style>
+<style scoped>
 .loader {
   border-top-color: #3498db;
   -webkit-animation: spinner 1.5s linear infinite;

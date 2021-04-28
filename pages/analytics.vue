@@ -2,7 +2,7 @@
   <div>
     <div class="flex justify-center mt-16 flex-wrap">
       <h1
-        class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate"
+        class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate dark:text-gray-300"
       >
         Analyse a City
       </h1>
