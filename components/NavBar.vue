@@ -140,6 +140,9 @@ export default class NavBar extends Vue {
   color-scheme: light dark;
 } */
 
+.dark {
+}
+
 .toggle-checkbox:checked {
   @apply: right-0 border-green-400;
   right: 0;

@@ -25,8 +25,16 @@
             <span>Add City</span>
           </button>
         </div>
-        <div class="news-table-container" v-for="news, i in newsTables" :key="news.uid">
-          <news-table :location="news.location" :source="news.source" :index="i"></news-table>
+        <div
+          class="news-table-container"
+          v-for="(news, i) in newsTables"
+          :key="news.uid"
+        >
+          <news-table
+            :location="news.location"
+            :source="news.source"
+            :index="i"
+          ></news-table>
         </div>
       </div>
     </div>
@@ -35,6 +43,7 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
+import { ipData } from "~/store";
 
 interface NewsTable {
   location: string;
@@ -46,11 +55,6 @@ interface NewsTable {
 export default class Index extends Vue {
   newsTables: Array<NewsTable> = [
     // TODO REPLACE WITH USERS CITY LATER
-    {
-      location: "London",
-      source: "google",
-      uid: this.randomUID()
-    }
   ];
   ip: string = "8.8.8.8";
   // Get real ip from x-forwarded-for header due to heroku tunneling res through proxy
@@ -59,13 +63,22 @@ export default class Index extends Vue {
     return {
       ip: req.headers["x-forwarded-for"]
         ? req.headers["x-forwarded-for"]
-        : "8.8.8.8"
+        : "8.8.8.8",
     };
   }
 
-  mounted() {
+  async mounted() {
     this.$root.$on("addCityNewsFeed", this.addCityNewsFeed);
     this.$root.$on("deleteNewsTable", this.deleteNewsTable);
+    if (Object.keys(ipData.data).length == 0)
+      await ipData.setData(await this.$http.$get(`/external/ip/${this.ip}`));
+
+    let city = ipData.data.city;
+    this.newsTables.push({
+      location: city,
+      source: "google",
+      uid: this.randomUID(),
+    });
   }
 
   openNewsModal() {
@@ -76,12 +89,15 @@ export default class Index extends Vue {
     this.newsTables.push({
       location: location,
       source: "google",
-      uid: this.randomUID()
+      uid: this.randomUID(),
     });
   }
 
   randomUID() {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    return (
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15)
+    );
   }
 
   deleteNewsTable(index: number) {

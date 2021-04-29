@@ -7,7 +7,10 @@
         {{ cityName }}
       </h1>
       <!-- TODO Make last {{ X }} months more robust -->
-      <p class="pt-4">Amount of crimes in the last {{datasets[0].data.length}} months: <b>{{ totalCrimeCount() }}</b></p>
+      <p class="pt-4">
+        Amount of crimes in the last {{ datasets[0].data.length }} months:
+        <b>{{ totalCrimeCount() }}</b>
+      </p>
       <line-chart :data="{ labels: Array.from(months), datasets }" />
     </div>
     <div v-if="!loading" class="px-6">
@@ -29,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from "nuxt-property-decorator";
+import { Vue, Component, Prop } from "nuxt-property-decorator";
 
 interface Crime {
   id: number;
@@ -43,6 +46,7 @@ interface Crime {
 
 @Component
 export default class CrimeAnalysis extends Vue {
+  @Prop() default: string;
   months: Set<string> = new Set();
   datasets = [];
   loading: boolean = true;
@@ -50,7 +54,7 @@ export default class CrimeAnalysis extends Vue {
 
   async mounted() {
     this.$root.$on("searchCityStatistics", this.searchCityStatistics);
-    await this.searchCityStatistics("Reading");
+    await this.searchCityStatistics(this.default);
   }
 
   async searchCityStatistics(cityName: string) {
@@ -63,22 +67,21 @@ export default class CrimeAnalysis extends Vue {
     ).reverse();
     let crimeNames: Set<string> = new Set();
 
-    if (crimesList.length == 0){
+    if (crimesList.length == 0) {
       this.$toast.show({
         type: "danger",
         title: "Error",
-        message: "No data available, please try again in a few minutes"
+        message: "No data available, please try again in a few minutes",
       });
-      return
+      return;
     }
-      
 
-    crimesList.forEach(crime => {
+    crimesList.forEach((crime) => {
       this.months.add(crime.month);
       crimeNames.add(crime.name);
     });
 
-    crimeNames.forEach(name => {
+    crimeNames.forEach((name) => {
       let r = Math.floor(Math.random() * 256),
         g = Math.floor(Math.random() * 256),
         b = Math.floor(Math.random() * 256);
@@ -87,8 +90,8 @@ export default class CrimeAnalysis extends Vue {
         borderColor: `rgb(${r},${g},${b})`,
         backgroundColor: `rgba(${r},${g},${b}, 0.1)`,
         data: crimesList
-          .filter(crime => crime.name == name)
-          .map(crime => crime.value)
+          .filter((crime) => crime.name == name)
+          .map((crime) => crime.value),
       });
     });
 

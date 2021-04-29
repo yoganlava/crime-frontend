@@ -30,7 +30,7 @@
               x="0px"
               y="0px"
               viewBox="0 0 16 16"
-              style="enable-background:new 0 0 16 16;"
+              style="enable-background: new 0 0 16 16"
               xml:space="preserve"
             >
               <path
@@ -43,15 +43,33 @@
         </div>
       </div>
     </div>
-    <city-analysis></city-analysis>
+    <city-analysis v-if="this.default" :default="this.default"></city-analysis>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
+import { ipData } from "~/store";
 @Component
 export default class Analytics extends Vue {
   city: string = "";
+  ip: string = "";
+  default: string = "";
+
+  async asyncData({ req }) {
+    if (req == undefined) return;
+    return {
+      ip: req.headers["x-forwarded-for"]
+        ? req.headers["x-forwarded-for"]
+        : "8.8.8.8",
+    };
+  }
+
+  async created() {
+    if (Object.keys(ipData.data).length == 0)
+      await ipData.setData(await this.$http.$get(`/external/ip/${this.ip}`));
+    this.default = ipData.data.city;
+  }
 
   searchCity() {
     this.$root.$emit("searchCityStatistics", this.city);
