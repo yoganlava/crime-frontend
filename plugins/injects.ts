@@ -4,6 +4,6 @@ declare module "vue/types/vue" {
   interface Vue {
     $http: any;
     $toast: any;
-    $createConnection: Function;
+    $createConnection: (Function) => { cable: Actioncable.Cable, channel: Actioncable.Channel };
   }
 }

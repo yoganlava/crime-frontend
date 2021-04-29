@@ -1,62 +1,81 @@
 <template>
   <div
-    class="bg-white dark:bg-gray-800 dark:text-gray-300 dark:border-gray-500 border-2 border-gray-300 p-3 rounded-md tracking-wide shadow-lg news-table flex flex-col items-center justify-center"
+    class="bg-white dark:bg-gray-800 dark:text-gray-300 dark:border-gray-500 border-2 border-gray-300 p-3 rounded-md tracking-wide shadow-lg news-table flex flex-col justify-center"
   >
-    <h1 class="table-title">Live news in {{ location }}</h1>
-    <spinning-loader v-if="this.currentNews.length == 0"></spinning-loader>
-    <div v-else v-for="(news, i) in paginatedNews()" :key="i">
-      <news-article
-        :title="news.title"
-        :description="news.description"
-        :url="news.url"
-      ></news-article>
+    <div class="flex justify-between">
+      <h1 class="table-title text-2xl">Live news in {{ location }}</h1>
+      <div class="modal-close cursor-pointer z-50 float-right" @click="deleteTable">
+        <svg
+          class="fill-current text-black"
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 18 18"
+        >
+          <path
+            d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"
+          ></path>
+        </svg>
+      </div>
     </div>
-    <nav
-      class="relative z-0 inline-flex rounded-md shadow-sm"
-      aria-label="Pagination"
-    >
-      <a
-        @click="decrementPageNumber"
-        class="dark:text-gray-300 dark:bg-gray-800 relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+    <div v-if="this.currentNews.length == 0" class="flex justify-center">
+      <spinning-loader></spinning-loader>
+    </div>
+    <div v-else class="items-center">
+      <div v-for="(news, i) in paginatedNews()" :key="i">
+        <news-article
+          :title="news.title"
+          :description="news.description"
+          :url="news.url"
+        ></news-article>
+      </div>
+      <nav
+        class="relative z-0 inline-flex rounded-md shadow-sm"
+        aria-label="Pagination"
       >
-        <svg
-          class="h-5 w-5"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
+        <a
+          @click="decrementPageNumber"
+          class="dark:text-gray-300 dark:bg-gray-800 relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
         >
-          <path
-            fill-rule="evenodd"
-            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </a>
-      <p
-        class="dark:text-gray-300 dark:bg-gray-800 relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
-      >
-        {{ pageNum }}
-      </p>
-      <a
-        @click="incrementPageNumber"
-        class="dark:text-gray-300 dark:bg-gray-800 relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-      >
-        <svg
-          class="h-5 w-5"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
+          <svg
+            class="h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </a>
+        <p
+          class="dark:text-gray-300 dark:bg-gray-800 relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
         >
-          <path
-            fill-rule="evenodd"
-            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </a>
-    </nav>
+          {{ pageNum }}
+        </p>
+        <a
+          @click="incrementPageNumber"
+          class="dark:text-gray-300 dark:bg-gray-800 relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+        >
+          <svg
+            class="h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </a>
+      </nav>
+    </div>
   </div>
 </template>
 
@@ -78,13 +97,16 @@ interface NewsArticle {
 export default class NewsTable extends Vue {
   @Prop() location: string;
   @Prop() source: string;
+  @Prop() index: number;
   currentNews: Array<NewsArticle> = [];
   pageNum: number = 1;
   limit: number = 4;
   channel: Actioncable.Channel;
+  cable: Actioncable.Cable;
 
   mounted() {
-    this.channel = this.$createConnection(this.parseMessage);
+    let { cable, channel } = this.$createConnection(this.parseMessage);
+    this.cable = cable, this.channel = channel;
     setTimeout(() => {
       this.channel.perform("request_update", {
         location: this.location,
@@ -106,8 +128,6 @@ export default class NewsTable extends Vue {
       return;
     }
     this.currentNews.unshift(...this.getDifference(data, this.currentNews));
-    console.log(this.currentNews);
-
     this.$forceUpdate();
   }
 
@@ -141,6 +161,13 @@ export default class NewsTable extends Vue {
       (this.pageNum - 1) * this.limit,
       this.pageNum * this.limit
     );
+  }
+
+  deleteTable() {
+    // Destructor Stuff
+    this.$root.$emit("deleteNewsTable", this.index);
+    this.cable.disconnect();
+    this.$destroy();
   }
 }
 8;

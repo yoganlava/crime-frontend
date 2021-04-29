@@ -25,8 +25,8 @@
             <span>Add City</span>
           </button>
         </div>
-        <div class="news-table-container" v-for="news, i in newsTables" :key="i">
-          <news-table :location="news.location" :source="news.source"></news-table>
+        <div class="news-table-container" v-for="news, i in newsTables" :key="news.uid">
+          <news-table :location="news.location" :source="news.source" :index="i"></news-table>
         </div>
       </div>
     </div>
@@ -39,6 +39,7 @@ import { Vue, Component } from "nuxt-property-decorator";
 interface NewsTable {
   location: string;
   source: string;
+  uid: string;
 }
 
 @Component
@@ -47,7 +48,8 @@ export default class Index extends Vue {
     // TODO REPLACE WITH USERS CITY LATER
     {
       location: "London",
-      source: "google"
+      source: "google",
+      uid: this.randomUID()
     }
   ];
   ip: string = "8.8.8.8";
@@ -63,6 +65,7 @@ export default class Index extends Vue {
 
   mounted() {
     this.$root.$on("addCityNewsFeed", this.addCityNewsFeed);
+    this.$root.$on("deleteNewsTable", this.deleteNewsTable);
   }
 
   openNewsModal() {
@@ -72,8 +75,21 @@ export default class Index extends Vue {
   addCityNewsFeed(location: string) {
     this.newsTables.push({
       location: location,
-      source: "google"
+      source: "google",
+      uid: this.randomUID()
     });
+  }
+
+  randomUID() {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+  }
+
+  deleteNewsTable(index: number) {
+    console.log(index);
+    // this.newsTables.splice(index,1);
+    this.$delete(this.newsTables, index);
+    console.log(this.newsTables);
+    this.$forceUpdate();
   }
 }
 </script>
