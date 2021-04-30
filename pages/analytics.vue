@@ -1,6 +1,11 @@
 <template>
   <div>
-    <div class="flex justify-center mt-16 flex-wrap">
+    <div class="flex justify-center flex-wrap">
+      <analytics-counter
+        :title="'Daily Searches'"
+        :url="'/api/statistics/get_search_count'"
+      ></analytics-counter>
+      <div class="break"></div>
       <h1
         class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate dark:text-gray-300"
       >
@@ -66,6 +71,7 @@ export default class Analytics extends Vue {
   }
 
   async created() {
+    await this.$http.$get("/api/statistics/log_visit");
     if (Object.keys(ipData.data).length == 0)
       await ipData.setData(await this.$http.$get(`/external/ip/${this.ip}`));
     this.default = ipData.data.city;
