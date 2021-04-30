@@ -123,9 +123,8 @@ export default class Index extends Vue {
 
 .news-table-container,
 .news {
-  display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  display: block;
 }
 
 .news-title {
