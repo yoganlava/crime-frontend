@@ -49,7 +49,7 @@
           <div class="flex-shrink-0 flex items-center">
             <h1 class="nav-title">Crime</h1>
           </div>
-          <div  class=" hidden sm:block sm:ml-6 sm:unhidden">
+          <div  class="hidden sm:ml-6 sm:block">
             <div class="flex space-x-4">
               <nuxt-link
                 class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
@@ -95,7 +95,7 @@
       </div>
     </div>
     <!-- <div id="mobile-menu" ref="mobile-menu" v-bind:class="this.openMenu ? 'hidden' : 'block'" > -->
-    <div id="mobile-menu" ref="mobile-menu" v-bind:class="this.openMenu ? 'hidden' : 'block'" class='sm:hidden'>
+    <div id="mobile-menu" ref="mobile-menu" :class="this.openMenu ? 'block' : 'hidden'" class='sm:hidden'>
       <div class="px-2 pt-2 pb-3 space-y-1">
         <nuxt-link
           class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
@@ -141,10 +141,7 @@ export default class NavBar extends Vue {
   toggleMenu() {
     // :class="open ? 'block': 'sm:hidden'"
     // this.$refs["mobile-menu"]:class = "open ? 'block': 'sm:hidden'";
-    this.openMenu = !this.openMenu
-    return {'block' : this.openMenu,
-            'hidden' : !this.openMenu};
- 
+    this.openMenu = !this.openMenu 
   }
 }
 </script>

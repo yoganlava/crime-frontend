@@ -408,7 +408,7 @@ export default class MapContainer extends Vue {
 </script>
 
 <style>
-@import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+
 @import "leaflet.markercluster/dist/MarkerCluster.css";
 @import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 

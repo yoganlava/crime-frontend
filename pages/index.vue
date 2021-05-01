@@ -3,42 +3,45 @@
     <new-news-modal></new-news-modal>
     <floating-search></floating-search>
     <map-container :ip="ip"></map-container>
-    <analytics-counter
-      :title="'Daily Website Visits'"
-      :url="'/api/statistics/get_visit_count'"
-    ></analytics-counter>
     <div class="break"></div>
-    <div class="news">
-      <div class="news-header">
-        <h1 class="news-title">Live news</h1>
-        <button
-          class="bg-gray-300 hover:bg-gray-400 dark:text-gray-300 dark:bg-gray-800 text-gray-800 dark:hover:bg-gray-700 font-bold py-2 px-4 rounded inline-flex items-center ml-2"
-          @click="openNewsModal"
-        >
-          <svg
-            class="fill-current w-6 h-6 mr-2"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
+    <div class="lower">
+      <analytics-counter
+        :title="'Daily Website Visits'"
+        :url="'/api/statistics/get_visit_count'"
+      ></analytics-counter>
+      <div class="break"></div>
+      <div class="news">
+        <div class="news-header">
+          <h1 class="news-title">Live news</h1>
+          <button
+            class="bg-gray-300 hover:bg-gray-400 dark:text-gray-300 dark:bg-gray-800 text-gray-800 dark:hover:bg-gray-700 font-bold py-2 px-4 rounded inline-flex items-center ml-2"
+            @click="openNewsModal"
           >
-            <path
-              fill-rule="evenodd"
-              d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <span>Add City</span>
-        </button>
-      </div>
-      <div
-        class="news-table-container"
-        v-for="(news, i) in newsTables"
-        :key="news.uid"
-      >
-        <news-table
-          :location="news.location"
-          :source="news.source"
-          :index="i"
-        ></news-table>
+            <svg
+              class="fill-current w-6 h-6 mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span>Add City</span>
+          </button>
+        </div>
+        <div
+          class="news-table-container"
+          v-for="(news, i) in newsTables"
+          :key="news.uid"
+        >
+          <news-table
+            :location="news.location"
+            :source="news.source"
+            :index="i"
+          ></news-table>
+        </div>
       </div>
     </div>
   </div>
@@ -121,6 +124,10 @@ export default class Index extends Vue {
   justify-content: center;
 }
 
+.lower {
+  display: block;
+}
+
 .news-table-container,
 .news {
   justify-content: center;
@@ -136,5 +143,11 @@ export default class Index extends Vue {
   justify-content: center;
   flex-basis: 100%;
   display: flex;
+}
+
+.counter {
+  display:block;
+  justify-content: center;
+
 }
 </style>
