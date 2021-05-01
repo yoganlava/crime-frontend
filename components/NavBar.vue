@@ -8,6 +8,7 @@
             class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
             aria-controls="mobile-menu"
             aria-expanded="false"
+            v-on:click="toggleMenu"
           >
             <span class="sr-only">Open main menu</span>
             <svg
@@ -48,7 +49,7 @@
           <div class="flex-shrink-0 flex items-center">
             <h1 class="nav-title">Crime</h1>
           </div>
-          <div class="sm:block sm:ml-6">
+          <div  class=" hidden sm:block sm:ml-6 sm:unhidden">
             <div class="flex space-x-4">
               <nuxt-link
                 class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
@@ -93,7 +94,8 @@
         </div>
       </div>
     </div>
-    <div class="sm:hidden" id="mobile-menu">
+    <!-- <div id="mobile-menu" ref="mobile-menu" v-bind:class="this.openMenu ? 'hidden' : 'block'" > -->
+    <div id="mobile-menu" ref="mobile-menu" v-bind:class="this.openMenu ? 'hidden' : 'block'" class='sm:hidden'>
       <div class="px-2 pt-2 pb-3 space-y-1">
         <nuxt-link
           class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
@@ -113,6 +115,7 @@
         >
           About
         </nuxt-link>
+        
       </div>
     </div>
   </nav>
@@ -122,7 +125,9 @@
 import { Vue, Component, Watch } from "nuxt-property-decorator";
 @Component
 export default class NavBar extends Vue {
+
   globalDarkMode: boolean = false;
+  openMenu: boolean = false;
 
   @Watch("globalDarkMode")
   toggleDarkMode() {
@@ -132,8 +137,18 @@ export default class NavBar extends Vue {
       ? "light dark"
       : "light";
   }
+
+  toggleMenu() {
+    // :class="open ? 'block': 'sm:hidden'"
+    // this.$refs["mobile-menu"]:class = "open ? 'block': 'sm:hidden'";
+    this.openMenu = !this.openMenu
+    return {'block' : this.openMenu,
+            'hidden' : !this.openMenu};
+ 
+  }
 }
 </script>
+
 
 <style lang="postcss">
 /* :root {
