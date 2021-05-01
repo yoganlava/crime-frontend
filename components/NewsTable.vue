@@ -2,19 +2,7 @@
   <div
     class="bg-white dark:bg-gray-800 dark:text-gray-300 dark:border-gray-500 border-2 border-gray-300 p-3 rounded-md tracking-wide shadow-lg news-table flex flex-col justify-center"
   >
-    <div class="flex justify-between">
-      <h1 class="table-title text-2xl">Live news in {{ location }}</h1>
-      <div v-if="currentNews.length">
-        <label class="dark:text-gray-300">Website:</label>
-        <select
-          class="relative bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm dark:bg-gray-800 dark:text-gray-300"
-          v-model="source"
-        >
-          <option value="google">Google</option>
-          <option value="independent">The Independent</option>
-          <option value="guardian">The Guardian</option>
-        </select>
-      </div>
+    <div class="grid-cols-2 sm:grid-cols-4">
       <div
         class="modal-close cursor-pointer z-50 float-right"
         @click="deleteTable"
@@ -30,6 +18,18 @@
             d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"
           ></path>
         </svg>
+      </div>
+      <h1 class="table-title text-2xl">Live news in {{ location }}</h1>
+      <div v-if="currentNews.length" class="sm:grid-cols-2">
+        <label class="dark:text-gray-300">Website:</label>
+        <select
+          class="relative bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm dark:bg-gray-800 dark:text-gray-300"
+          v-model="source"
+        >
+          <option value="google">Google</option>
+          <option value="independent">The Independent</option>
+          <option value="guardian">The Guardian</option>
+        </select>
       </div>
     </div>
     <div v-if="this.currentNews.length == 0" class="flex justify-center">

@@ -56,9 +56,7 @@ interface NewsTable {
 
 @Component
 export default class Index extends Vue {
-  newsTables: Array<NewsTable> = [
-    // TODO REPLACE WITH USERS CITY LATER
-  ];
+  newsTables: Array<NewsTable> = [];
   ip: string = "8.8.8.8";
   // Get real ip from x-forwarded-for header due to heroku tunneling res through proxy
   async asyncData({ req }) {
@@ -76,7 +74,6 @@ export default class Index extends Vue {
     this.$root.$on("deleteNewsTable", this.deleteNewsTable);
     if (Object.keys(ipData.data).length == 0)
       await ipData.setData(await this.$http.$get(`/external/ip/${this.ip}`));
-
     let city = ipData.data.city;
     this.newsTables.push({
       location: city,
