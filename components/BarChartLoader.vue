@@ -1,5 +1,5 @@
 <template>
-  <div class="loader">
+  <div class="loader items-center col-span-2">
     <h2>Loading Crime Analytics!</h2>
     <div class="bars">
       <div><div class="loader1"></div></div>
@@ -63,17 +63,33 @@ h2 {
 
 // TODO Better Centering
 .loader {
+  display:block;
+  width: 100%;
+
+  // margin: 0;
   text-align: center;
   align-items: center;
-  position: absolute;
-  left: calc(45%);
-  top: calc(50% - 56px);
+  // position: absolute;
+  // left: calc(20%);
+  // top: calc(50% - 56px);
+  justify-content:  center;
+  padding-left: 30%;
+  padding-right: 30%;
+
 }
 
 .bars {
+  // position: absolute;
+  // top: 50%;
+  // left: 45%;
+  margin-left: calc(50% - 30px);
   transform: scaleY(-1);
-  margin-left: 35%;
+  // margin-left: 35%;
   margin-top: 50px;
+  // padding-left: 37%;
+  justify-content: center;
+  text-align: center;
+  align-items:center;
 }
 
 .loader1 {

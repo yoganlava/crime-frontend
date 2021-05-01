@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-10 text-left pl-16 divide-x-2 grid grid-cols-2">
+  <div class="mt-10 text-left pl-0 divide-x-2 grid grid-cols-2 mx-auto">
     <div class="px-6" v-if="!loading">
       <h1
         class="text-2xl font-bold leading-7 lg:text-6xl sm:text-4xl md:text-5xl text-gray-900 dark:text-gray-300"
