@@ -1,6 +1,9 @@
 <template>
-  <div class="mt-10 text-left pl-0 divide-x-2 grid grid-cols-1 sm:grid-cols-2 mx-auto">
-    <div class="px-6" v-if="!loading">
+  <div
+    class="mt-10 text-left pl-0 mx-auto"
+    :class="{ 'divide-x-2 grid grid-cols-1 sm:grid-cols-2': state !== 'error' }"
+  >
+    <div class="px-6" v-if="state == 'complete'">
       <h1
         class="text-2xl font-bold leading-7 lg:text-6xl sm:text-4xl md:text-5xl text-gray-900 dark:text-gray-300"
       >
@@ -13,7 +16,7 @@
       </p>
       <line-chart :data="{ labels: Array.from(months), datasets }" />
     </div>
-    <div v-if="!loading" class="px-6">
+    <div v-if="state == 'complete'" class="px-6">
       <h1
         class="text-2xl font-bold leading-7 lg:text-6xl sm:text-4xl md:text-5xl text-gray-900 dark:text-gray-300"
       >
@@ -27,7 +30,10 @@
         ></crime-percentage-bar>
       </div>
     </div>
-    <bar-chart-loader v-else></bar-chart-loader>
+    <bar-chart-loader v-if="state == 'loading'"></bar-chart-loader>
+    <div class="flex justify-center" v-if="state == 'error'">
+      <p>{{ errorMessage }}</p>
+    </div>
   </div>
 </template>
 
@@ -44,13 +50,21 @@ interface Crime {
   month: string;
 }
 
+enum LoadingState {
+  LOADING = "loading",
+  COMPLETE = "complete",
+  ERROR = "error",
+}
+
 @Component
 export default class CrimeAnalysis extends Vue {
   @Prop() default: string;
   months: Set<string> = new Set();
   datasets = [];
-  loading: boolean = true;
+  // loading: boolean = true;
+  state: LoadingState = LoadingState.LOADING;
   cityName: string;
+  errorMessage: string = "";
 
   async mounted() {
     this.$root.$on("searchCityStatistics", this.searchCityStatistics);
@@ -58,13 +72,23 @@ export default class CrimeAnalysis extends Vue {
   }
 
   async searchCityStatistics(cityName: string) {
-    this.loading = true;
+    // this.loading = true;
+    this.state = LoadingState.LOADING;
     this.cityName = cityName;
     this.datasets = [];
     this.months = new Set();
-    let crimesList: Crime[] = (
-      await this.$http.$get("/api/statistics/city?name=" + cityName)
-    ).reverse();
+    let crimesList: Crime[] = await this.$http.$get(
+      "/api/statistics/city?name=" + cityName
+    );
+
+    if ((crimesList as any).error) {
+      this.state = LoadingState.ERROR;
+      this.errorMessage = (crimesList as any).error;
+      return;
+    }
+
+    crimesList = crimesList.reverse();
+
     let crimeNames: Set<string> = new Set();
 
     if (crimesList.length == 0) {
@@ -95,7 +119,7 @@ export default class CrimeAnalysis extends Vue {
       });
     });
 
-    this.loading = false;
+    this.state = LoadingState.COMPLETE;
     console.log(this.totalCrimeCount());
   }
 

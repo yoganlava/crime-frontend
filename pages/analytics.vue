@@ -13,39 +13,10 @@
       </h1>
       <div class="break"></div>
       <div class="pt-6 relative">
-        <div class="pt-2 relative mx-auto text-gray-600">
-          <input
-            class="border-2 border-gray-300 bg-white h-10 px-10 rounded-lg text-sm focus:outline-none m"
-            type="search"
-            placeholder="Search City"
-            v-model="city"
-            v-on:keyup.enter="searchCity"
-          />
-          <button
-            type="submit"
-            class="absolute right-0 top-0 mt-5 mr-4"
-            @click="searchCity"
-          >
-            <svg
-              class="text-gray-600 h-4 w-4 fill-current"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              version="1.1"
-              id="Capa_1"
-              x="0px"
-              y="0px"
-              viewBox="0 0 16 16"
-              style="enable-background: new 0 0 16 16"
-              xml:space="preserve"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </button>
-        </div>
+        <auto-complete-search
+          class="pt-2 relative mx-auto text-gray-600"
+          :onClick="searchCity"
+        ></auto-complete-search>
       </div>
     </div>
     <city-analysis v-if="this.default" :default="this.default"></city-analysis>
@@ -57,7 +28,6 @@ import { Vue, Component } from "nuxt-property-decorator";
 import { ipData } from "~/store";
 @Component
 export default class Analytics extends Vue {
-  city: string = "";
   ip: string = "";
   default: string = "";
 
@@ -77,8 +47,8 @@ export default class Analytics extends Vue {
     this.default = ipData.data.city;
   }
 
-  searchCity() {
-    this.$root.$emit("searchCityStatistics", this.city);
+  searchCity(address) {
+    this.$root.$emit("searchCityStatistics", address);
   }
 }
 </script>
@@ -88,5 +58,4 @@ export default class Analytics extends Vue {
   flex-basis: 100%;
   height: 0;
 }
-
 </style>

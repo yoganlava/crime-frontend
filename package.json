@@ -31,6 +31,7 @@
         "sass-loader": "^10.1.1",
         "ts-jest": "^26.5.4",
         "vue-chartjs": "^3.5.1",
+        "vue-debounce": "^2.6.0",
         "vuex-module-decorators": "^1.0.1"
     },
     "devDependencies": {

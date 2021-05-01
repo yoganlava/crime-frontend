@@ -1,106 +1,29 @@
 <template>
   <div class="pt-2 relative mx-auto text-gray-600 search-container">
-    <input
-      v-model="address"
-      v-on:keyup.enter="search"
-      class="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
-      type="search"
-      placeholder="Search address"
-    />
-    <button
-      type="submit"
-      class="absolute right-0 top-0 mt-5 mr-4"
-      @click="search"
-    >
-      <svg
-        class="text-gray-600 h-4 w-4 fill-current"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        version="1.1"
-        id="Capa_1"
-        x="0px"
-        y="0px"
-        viewBox="0 0 16 16"
-        style="enable-background:new 0 0 16 16;"
-        xml:space="preserve"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-          clip-rule="evenodd"
-        />
-      </svg>
-    </button>
-    <div
-      class="absolute w-full z-50 bg-white border border-gray-300 mt-1 mh-48 overflow-hidden overflow-y-scroll rounded-md shadow-md"
-      v-if="suggestions.length"
-    >
-      <ul class="py-1">
-        <li
-          v-for="(suggestion, i) in suggestions"
-          :key="i"
-          class="px-3 py-2 cursor-pointer hover:bg-gray-200"
-          @click="onSuggestionClick(suggestion)"
-        >
-          <!-- <b>Read</b>ing -->
-          <!-- {{ highlightSuggestionTitle(suggestion) }} -->
-          <p v-html="highlightSuggestionTitle(suggestion)"></p>
-        </li>
-      </ul>
-    </div>
+    <auto-complete-search :onClick="search"></auto-complete-search>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Watch } from "nuxt-property-decorator";
+import { Vue, Component } from "nuxt-property-decorator";
 
 @Component
 export default class FloatingSearch extends Vue {
-  address: string = "";
-  suggestions = [];
-  searching = false;
   // Get geo location of specified query and emit goToAddress message
-  async search() {
+  async search(address) {
     let geocode = await this.$http.$get(
-      `https://geocode.xyz/${this.address.replaceAll(" ", "+")}?json=1`
+      `/api/geocode/forward?q=${address.replaceAll(" ", "+")}`
     );
-    this.$root.$emit("goToAddress", [geocode.latt, geocode.longt]);
-  }
-
-  @Watch("address")
-  async autocomplete() {
-    if (!this.searching) {
-      setTimeout(async () => {
-        this.searching = true;
-        this.suggestions = [];
-        let res = await this.$http.$get(
-          `/api/autocomplete?q=${this.address.replaceAll(" ", "+")}`
-        );
-        this.suggestions = res.items;
-        this.searching = false;
-
-      }, 1000);
+    if (geocode.error) {
+      this.$toast.show({
+        type: "danger",
+        title: "Error",
+        message: geocode.error,
+      });
+      return;
     }
-  }
-
-  highlightSuggestionTitle(suggestion) {
-    let string = suggestion.title;
-    for (let highlight of suggestion.highlights.title) {
-      string = this.insertInto(
-        this.insertInto(string, highlight.start, "<b>"),
-        highlight.end + 3,
-        "</b>"
-      );
-    }
-    return string;
-  }
-
-  onSuggestionClick(suggestion) {
-    this.address = suggestion.title;
-  }
-
-  insertInto(string: string, index: number, value: string) {
-    return string.substr(0, index) + value + string.substr(index);
+    geocode = geocode[0];
+    this.$root.$emit("goToAddress", [geocode.center[1], geocode.center[0]]);
   }
 }
 </script>

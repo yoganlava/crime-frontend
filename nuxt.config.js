@@ -21,7 +21,11 @@ export default {
     css: [],
 
     // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-    plugins: ["~/plugins/injects", { src: "~/plugins/actioncable", ssr: false }, { src: "~/plugins/vuechartjs", ssr: false }],
+    plugins: ["~/plugins/injects",
+                { src: "~/plugins/actioncable", ssr: false },
+                { src: "~/plugins/vuechartjs", ssr: false },
+                "~/plugins/debounce"
+            ],
 
     // Auto import components: https://go.nuxtjs.dev/config-components
     components: true,
