@@ -4,7 +4,21 @@
   >
     <div class="flex justify-between">
       <h1 class="table-title text-2xl">Live news in {{ location }}</h1>
-      <div class="modal-close cursor-pointer z-50 float-right" @click="deleteTable">
+      <div v-if="currentNews.length">
+        <label class="dark:text-gray-300">Website:</label>
+        <select
+          class="relative bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm dark:bg-gray-800 dark:text-gray-300"
+          v-model="source"
+        >
+          <option value="google">Google</option>
+          <option value="independent">The Independent</option>
+          <option value="guardian">The Guardian</option>
+        </select>
+      </div>
+      <div
+        class="modal-close cursor-pointer z-50 float-right"
+        @click="deleteTable"
+      >
         <svg
           class="fill-current text-black"
           xmlns="http://www.w3.org/2000/svg"
@@ -80,7 +94,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "nuxt-property-decorator";
+import { Vue, Component, Prop, Watch } from "nuxt-property-decorator";
 import Actioncable from "actioncable";
 
 interface NewsArticle {
@@ -91,8 +105,8 @@ interface NewsArticle {
 
 @Component({
   components: {
-    NewsArticle: () => import("~/components/NewsArticle.vue")
-  }
+    NewsArticle: () => import("~/components/NewsArticle.vue"),
+  },
 })
 export default class NewsTable extends Vue {
   @Prop() location: string;
@@ -104,19 +118,28 @@ export default class NewsTable extends Vue {
   channel: Actioncable.Channel;
   cable: Actioncable.Cable;
 
+  @Watch("source")
+  changeSource() {
+    this.currentNews = [];
+    this.channel.perform("request_update", {
+      location: this.location,
+      source: this.source,
+    });
+  }
+
   mounted() {
     let { cable, channel } = this.$createConnection(this.parseMessage);
-    this.cable = cable, this.channel = channel;
+    (this.cable = cable), (this.channel = channel);
     setTimeout(() => {
       this.channel.perform("request_update", {
         location: this.location,
-        source: this.source
+        source: this.source,
       });
 
       setInterval(() => {
         this.channel.perform("request_update", {
           location: this.location,
-          source: this.source
+          source: this.source,
         });
       }, 50000);
     }, 2000);
@@ -132,7 +155,7 @@ export default class NewsTable extends Vue {
   }
 
   getDifference(arr1: Array<NewsArticle>, arr2: Array<NewsArticle>) {
-    return arr1.filter(o => this.indexOfObject(arr2, o) == -1);
+    return arr1.filter((o) => this.indexOfObject(arr2, o) == -1);
   }
 
   indexOfObject(arr: Array<NewsArticle>, object: NewsArticle) {

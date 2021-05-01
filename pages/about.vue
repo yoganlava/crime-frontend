@@ -65,7 +65,6 @@
         Credits
       </h2>
     </div>
-
     <div class="flex mx-auto justify-center dark:text-gray-300">
       <ul class="text-center">
         <li>Matthew McLoughlin</li>

@@ -7,9 +7,12 @@ Vue.use({
       let cable: Actioncable.Cable = Actioncable.createConsumer(
         "wss://crime-spotter-backend.herokuapp.com/news"
       );
-      let channel: Actioncable.Channel = cable.subscriptions.create("NewsChannel", {
-        received: func
-      });
+      let channel: Actioncable.Channel = cable.subscriptions.create(
+        "NewsChannel",
+        {
+          received: func
+        }
+      );
       return { cable, channel };
     };
   }
