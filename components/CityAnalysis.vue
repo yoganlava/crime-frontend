@@ -31,7 +31,7 @@
       </div>
     </div>
     <bar-chart-loader v-if="state == 'loading'"></bar-chart-loader>
-    <div class="flex justify-center" v-if="state == 'error'">
+    <div class="flex justify-center dark:text-gray-300" v-if="state == 'error'">
       <p>{{ errorMessage }}</p>
     </div>
   </div>
@@ -61,7 +61,6 @@ export default class CrimeAnalysis extends Vue {
   @Prop() default: string;
   months: Set<string> = new Set();
   datasets = [];
-  // loading: boolean = true;
   state: LoadingState = LoadingState.LOADING;
   cityName: string;
   errorMessage: string = "";
@@ -92,11 +91,9 @@ export default class CrimeAnalysis extends Vue {
     let crimeNames: Set<string> = new Set();
 
     if (crimesList.length == 0) {
-      this.$toast.show({
-        type: "danger",
-        title: "Error",
-        message: "No data available, please try again in a few minutes",
-      });
+      this.state = LoadingState.ERROR;
+      this.errorMessage =
+        "No data available, please try again in a few minutes";
       return;
     }
 
@@ -120,7 +117,6 @@ export default class CrimeAnalysis extends Vue {
     });
 
     this.state = LoadingState.COMPLETE;
-    console.log(this.totalCrimeCount());
   }
 
   totalCrimeCount() {

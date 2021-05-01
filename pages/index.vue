@@ -10,7 +10,7 @@
     <div class="break"></div>
     <div class="news">
       <div class="news-header">
-        <h1 class="news-title">Live news</h1>
+        <h1 class="news-title dark:text-gray-300">Live news</h1>
         <button
           class="bg-gray-300 hover:bg-gray-400 dark:text-gray-300 dark:bg-gray-800 text-gray-800 dark:hover:bg-gray-700 font-bold py-2 px-4 rounded inline-flex items-center ml-2"
           @click="openNewsModal"

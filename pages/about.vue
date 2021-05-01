@@ -7,7 +7,7 @@
         About
       </h1>
     </div>
-    <div class="mx-auto" style="width: 50%">
+    <div class="mx-auto dark:text-gray-300" style="width: 50%">
       <p class="text-center">
         This is a free tool that provides a way to look at crime in different
         locations. This information can be used for a plethora of purposes by
@@ -28,21 +28,30 @@
       </h2>
     </div>
 
-    <div class="flex mt-2 mx-auto justify-center" style="width: 50%">
+    <div
+      class="flex mt-2 mx-auto justify-center dark:text-gray-300"
+      style="width: 50%"
+    >
       <p>
         <b>Crime Map: </b>Offers data on criminal activity within a given
         location using the provided map.
       </p>
     </div>
 
-    <div class="flex mt-2 mx-auto justify-center" style="width: 50%">
+    <div
+      class="flex mt-2 mx-auto justify-center dark:text-gray-300"
+      style="width: 50%"
+    >
       <p>
         <b>Live News: </b>this is shown directly to you based on the location
         you enter. This can be found underneath the map.
       </p>
     </div>
 
-    <div class="flex mt-2 mx-auto justify-center" style="width: 50%">
+    <div
+      class="flex mt-2 mx-auto justify-center dark:text-gray-300"
+      style="width: 50%"
+    >
       <p>
         <b>Analytics: </b>An analytics page is offered to lay out more detailed
         statistics of a specified area.
@@ -57,7 +66,7 @@
       </h2>
     </div>
 
-    <div class="flex mx-auto justify-center">
+    <div class="flex mx-auto justify-center dark:text-gray-300">
       <ul class="text-center">
         <li>Matthew McLoughlin</li>
         <li>Rafael Koullouros</li>
