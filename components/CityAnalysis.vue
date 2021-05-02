@@ -26,7 +26,12 @@
         <crime-percentage-bar
           :current="data.data.reduce((a, b) => a + b, 0)"
           :total="totalCrimeCount()"
-          :name="data.label"
+          :name="
+            data.label
+              .split('-')
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ')
+          "
         ></crime-percentage-bar>
       </div>
     </div>

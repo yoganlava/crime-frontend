@@ -1,6 +1,8 @@
 <template>
   <div class="map-container" :class="{ fullscreen: fullscreen }">
     <client-only>
+      <div v-show="false" id="invisible-chart"></div>
+      <!-- <polygon-analysis ref="chart"></polygon-analysis> -->
       <l-map ref="map" :zoom="14">
         <l-tile-layer
           url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
@@ -18,6 +20,8 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from "nuxt-property-decorator";
+import PolygonAnalysis from "./PolygonAnalysis.vue";
+import Chart from "chart.js";
 
 interface LMap extends Element {
   mapObject: L.Map;
@@ -34,10 +38,14 @@ export default class MapContainer extends Vue {
   stationGroup: L.LayerGroup;
   fullscreen: boolean = false;
   darkMode: boolean = false;
+  html;
 
   $refs!: {
     map: LMap;
+    chart: any;
   };
+
+  created() {}
 
   // Set up map after mounted
   async mounted() {
@@ -47,10 +55,10 @@ export default class MapContainer extends Vue {
     this.panMapTo([geoInfo.lat, geoInfo.lon]);
     this.initialiseToolbar();
     this.getMap().on("pm:create", this.resolveCrimes);
-    this.$root.$on("goToAddress", coords => {
+    this.$root.$on("goToAddress", (coords) => {
       this.goToAddress(coords);
     });
-    this.$root.$on("triggerDarkMode", darkMode => {
+    this.$root.$on("triggerDarkMode", (darkMode) => {
       this.darkMode = darkMode;
     });
   }
@@ -64,7 +72,7 @@ export default class MapContainer extends Vue {
       this.$toast.show({
         type: "danger",
         title: "Error",
-        message: "Area too big"
+        message: "Area too big",
       });
       this.crimeGroup.clearLayers();
       this.stationGroup.clearLayers();
@@ -75,7 +83,10 @@ export default class MapContainer extends Vue {
     this.analyseLastLayer();
   }
 
-  analyseLastLayer() {
+  waitForNextTick = (vm) =>
+    new Promise<void>((resolve) => vm.$nextTick(() => resolve()));
+
+  async analyseLastLayer() {
     var crimeMap = {};
     // ! Probably change this to use crime objects
     this.crimeGroup.getLayers().forEach((crimeMarker: any) => {
@@ -83,27 +94,68 @@ export default class MapContainer extends Vue {
         ? crimeMap[crimeMarker.options.title] + 1
         : 1;
     });
-    console.log(crimeMap);
-    let crimeSummary = "<b>Crime Summary: </b>\n";
+    // ! Really ugly but basically only way I could think of
+    this.lastLayer.once("click", () => {
+      let canvas = document.createElement("canvas");
+      canvas.style.width = "400px";
+      canvas.style.height = "450px";
+      this.lastLayer.bindPopup(canvas);
+      this.lastLayer.openPopup();
+      let crimeMapKeys = Object.keys(crimeMap);
+      let colors = new Array(crimeMapKeys.length)
+        .fill(0)
+        .map(() => [
+          Math.floor(Math.random() * 256),
+          Math.floor(Math.random() * 256),
+          Math.floor(Math.random() * 256),
+        ]);
+      console.log(colors);
 
-    for (const [type, count] of Object.entries(crimeMap))
-      crimeSummary += `<p><b>${type
-        .split("-")
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")}: </b>${count}</p>\n`;
-
-    this.lastLayer.bindPopup(
-      `<p><b>Amount of crimes: </b>${this.crimeGroup.getLayers().length}</p>\n
-      <p><b>Most frequent crime: </b>${Object.keys(crimeMap)
-        .reduce(function(a, b) {
-          return crimeMap[a] > crimeMap[b] ? a : b;
-        })
-        .split("-")
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")}</p>
-        ${crimeSummary}
-      `
-    );
+      new Chart(canvas, {
+        type: "bar",
+        data: {
+          labels: crimeMapKeys.map((name) =>
+            name
+              .split("-")
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(" ")
+          ),
+          datasets: [
+            {
+              label: "Crimes",
+              data: crimeMapKeys.map((crime) => crimeMap[crime]),
+              borderColor: colors.map(
+                (color) => `rgb(${color[0]},${color[1]},${color[2]})`
+              ),
+              backgroundColor: colors.map(
+                (color) => `rgb(${color[0]},${color[1]},${color[2]},0.5)`
+              ),
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          legend: {
+            display: false,
+          },
+          title: {
+            display: true,
+            text: "Amount of crimes in the highlighted area",
+          },
+          scales: {
+            xAxes: [
+              {
+                ticks: {
+                  autoSkip: false,
+                },
+              },
+            ],
+          },
+        },
+      });
+      this.lastLayer.on("click", () => this.lastLayer.openPopup());
+    });
   }
 
   initialiseToolbar() {
@@ -116,7 +168,7 @@ export default class MapContainer extends Vue {
       cutPolygon: false,
       dragMode: false,
       editMode: false,
-      oneBlock: true
+      oneBlock: true,
     });
     this.getMap().pm.Toolbar.createCustomControl({
       name: "fullscreen",
@@ -128,7 +180,7 @@ export default class MapContainer extends Vue {
       },
       className: "icon-maximise",
       block: "options",
-      toggle: false
+      toggle: false,
     });
     this.getMap().pm.Toolbar.createCustomControl({
       name: "filter",
@@ -138,66 +190,66 @@ export default class MapContainer extends Vue {
       actions: [
         {
           text: "All",
-          onClick: () => this.filterMarkers("all")
+          onClick: () => this.filterMarkers("all"),
         },
         {
           text: "Anti Social Behavior",
-          onClick: () => this.filterMarkers("anti-social-behaviour")
+          onClick: () => this.filterMarkers("anti-social-behaviour"),
         },
         {
           text: "Bicycle Theft",
-          onClick: () => this.filterMarkers("bicycle-theft")
+          onClick: () => this.filterMarkers("bicycle-theft"),
         },
         {
           text: "Burglary",
-          onClick: () => this.filterMarkers("burglary")
+          onClick: () => this.filterMarkers("burglary"),
         },
         {
           text: "Criminal damage and arson",
-          onClick: () => this.filterMarkers("criminal-damage-arson")
+          onClick: () => this.filterMarkers("criminal-damage-arson"),
         },
         {
           text: "Drugs",
-          onClick: () => this.filterMarkers("drugs")
+          onClick: () => this.filterMarkers("drugs"),
         },
         {
           text: "Other theft",
-          onClick: () => this.filterMarkers("other-theft")
+          onClick: () => this.filterMarkers("other-theft"),
         },
         {
           text: "Possession of weapons",
-          onClick: () => this.filterMarkers("possession-of-weapons")
+          onClick: () => this.filterMarkers("possession-of-weapons"),
         },
         {
           text: "Public order",
-          onClick: () => this.filterMarkers("public-order")
+          onClick: () => this.filterMarkers("public-order"),
         },
         {
           text: "Robbery",
-          onClick: () => this.filterMarkers("robbery")
+          onClick: () => this.filterMarkers("robbery"),
         },
         {
           text: "Shoplifting",
-          onClick: () => this.filterMarkers("shoplifting")
+          onClick: () => this.filterMarkers("shoplifting"),
         },
         {
           text: "Theft from the person",
-          onClick: () => this.filterMarkers("theft-from-the-person")
+          onClick: () => this.filterMarkers("theft-from-the-person"),
         },
         {
           text: "Vehicle crime",
-          onClick: () => this.filterMarkers("vehicle-crime")
+          onClick: () => this.filterMarkers("vehicle-crime"),
         },
         {
           text: "Violence and sexual offences",
-          onClick: () => this.filterMarkers("violent-crime")
+          onClick: () => this.filterMarkers("violent-crime"),
         },
         {
           text: "Other crime",
-          onClick: () => this.filterMarkers("other-crime")
-        }
+          onClick: () => this.filterMarkers("other-crime"),
+        },
       ],
-      block: "options"
+      block: "options",
     });
 
     this.getMap().pm.Toolbar.createCustomControl({
@@ -208,7 +260,7 @@ export default class MapContainer extends Vue {
       },
       className: "icon-moon",
       block: "options",
-      toggle: false
+      toggle: false,
     });
   }
 
@@ -217,7 +269,7 @@ export default class MapContainer extends Vue {
     category == "all"
       ? this.crimeObjects.forEach(this.markCrime)
       : this.crimeObjects
-          .filter(crime => crime.category == category)
+          .filter((crime) => crime.category == category)
           .forEach(this.markCrime);
   }
 
@@ -225,9 +277,7 @@ export default class MapContainer extends Vue {
   async markCrimesInLastLayer() {
     this.crimeGroup.clearLayers();
     let crimes: Array<any> = await this.$http.$get(
-      `/api/crime/crime?poly=${this.getLastPolygonCoords().join(
-        ":"
-      )}`
+      `/api/crime/crime?poly=${this.getLastPolygonCoords().join(":")}`
     );
     this.crimeObjects = crimes;
     crimes.forEach(this.markCrime);
@@ -239,7 +289,7 @@ export default class MapContainer extends Vue {
         `
         <b>Crime Type:</b> ${crime.category
           .split("-")
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
           .join(" ")}<br>
         <b>Date:</b> ${crime.crime_date}<br>
         <b>Street:</b> ${crime.street}<br>
@@ -277,7 +327,7 @@ export default class MapContainer extends Vue {
           Date.now() / 1000
         )}`
       );
-    nearestStations.forEach(station => {
+    nearestStations.forEach((station) => {
       this.addMarker(
         [station.latitude, station.longitude],
         `<b>Station Name: </b> ${station.policeStationName}<br>
@@ -327,13 +377,13 @@ export default class MapContainer extends Vue {
     return (this.lastLayer.getLatLngs()[0] as Array<{
       lat;
       lng;
-    }>).map(latlng => [latlng.lat, latlng.lng]);
+    }>).map((latlng) => [latlng.lat, latlng.lng]);
   }
 
   // Get center of polygon
   getPolygonCentroid(points: Array<Array<number>>): Array<number> {
-    var x = points.map(point => point[0]),
-      y = points.map(point => point[1]),
+    var x = points.map((point) => point[0]),
+      y = points.map((point) => point[1]),
       cx = (Math.min(...x) + Math.max(...x)) / 2,
       cy = (Math.min(...y) + Math.max(...y)) / 2;
     return [cx, cy];
@@ -365,8 +415,8 @@ export default class MapContainer extends Vue {
           iconUrl: `markers/${type}.png`,
           iconSize: [55 / 1.5, 84 / 1.5],
           iconAnchor: [27.5 / 1.5, 84 / 1.5],
-          popupAnchor: [1, -34]
-        })
+          popupAnchor: [1, -34],
+        }),
       })
       .bindPopup(text)
       .addTo(group);
@@ -408,9 +458,12 @@ export default class MapContainer extends Vue {
 </script>
 
 <style>
-
 @import "leaflet.markercluster/dist/MarkerCluster.css";
 @import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+
+.leaflet-popup {
+  max-width: 600px;
+}
 
 .icon-compass {
   background-image: url("/icons/compass.svg");
