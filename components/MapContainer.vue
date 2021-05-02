@@ -20,7 +20,6 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from "nuxt-property-decorator";
-import PolygonAnalysis from "./PolygonAnalysis.vue";
 import Chart from "chart.js";
 
 interface LMap extends Element {
