@@ -41,7 +41,7 @@ export default class FloatingSearch extends Vue {
 
 @media only screen and (min-width: 640px) {
   .search-container {
-    top: 110px !important;
+    top: 125px;
   }
 }
 
