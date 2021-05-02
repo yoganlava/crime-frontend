@@ -39,6 +39,12 @@ export default class FloatingSearch extends Vue {
   transition: ease-in 0.25s;
 }
 
+@media only screen and (min-width: 640px) {
+  .search-container {
+    top: 110px !important;
+  }
+}
+
 .search-container:hover {
   opacity: 1;
   transition: ease-in 0.25s;
