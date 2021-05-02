@@ -11,14 +11,14 @@
       ></div>
 
       <div
-        class="inline-block align-bottom bg-white rounded-lg text-center overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+        class="inline-block align-bottom bg-white rounded-lg text-center overflow-hidden shadow-xl transform transition-all my-8 max-w-lg w-full"
       >
         <div class="modal-content py-4 text-center px-6">
           <h1 class="text-2xl">Add a City</h1>
           <div class="relative">
             <div class="pt-2 relative text-gray-600">
               <input
-                class="border-2 border-gray-300 bg-white h-10 px-5 pr-64 rounded-lg text-sm focus:outline-none"
+                class="border-2 border-gray-300 bg-white h-10 px-5 pr-32 rounded-lg text-sm focus:outline-none"
                 type="search"
                 placeholder="Search City"
                 v-on:keyup.enter="addCity"
@@ -26,7 +26,7 @@
               />
               <button
                 type="submit"
-                class="absolute right-0 top-0 mt-5 mr-7"
+                class="absolute right-0 top-0 mt-5 sm:mr-24 mr-12"
                 @click="addCity"
               >
                 <svg
@@ -38,7 +38,7 @@
                   x="0px"
                   y="0px"
                   viewBox="0 0 16 16"
-                  style="enable-background:new 0 0 16 16;"
+                  style="enable-background: new 0 0 16 16"
                   xml:space="preserve"
                 >
                   <path

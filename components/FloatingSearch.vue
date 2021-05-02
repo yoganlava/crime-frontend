@@ -39,7 +39,7 @@ export default class FloatingSearch extends Vue {
   transition: ease-in 0.25s;
 }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (max-width: 640px) {
   .search-container {
     top: 125px;
   }
