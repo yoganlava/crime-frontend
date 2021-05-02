@@ -115,10 +115,12 @@ export default class Index extends Vue {
   justify-content: center;
 }
 
+
 .news-table-container,
 .news {
-  justify-content: center;
   display: block;
+  width: 100%;
+  justify-content: center;
 }
 
 .news-title {

@@ -199,8 +199,13 @@ export default class NewsTable extends Vue {
 <style>
 .news-table {
   text-align: center;
-  margin: 5% 5%;
-  max-width: 60vw;
+  margin: 5% 20%;
+}
+
+@media only screen and (max-width: 800px) {
+  .news-table {
+    margin: 5% 5%;
+  }
 }
 
 .table-title {
