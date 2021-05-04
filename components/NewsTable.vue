@@ -23,7 +23,7 @@
       <div v-if="currentNews.length" class="sm:grid-cols-2">
         <label class="dark:text-gray-300">Website:</label>
         <select
-          class="relative bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm dark:bg-gray-800 dark:text-gray-300"
+          class="bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm dark:bg-gray-800 dark:text-gray-300"
           v-model="source"
         >
           <option value="google">Google</option>
@@ -43,13 +43,10 @@
           :url="news.url"
         ></news-article>
       </div>
-      <nav
-        class="relative z-0 inline-flex rounded-md shadow-sm"
-        aria-label="Pagination"
-      >
+      <nav class="z-0 inline-flex rounded-md shadow-sm" aria-label="Pagination">
         <a
           @click="decrementPageNumber"
-          class="dark:text-gray-300 dark:bg-gray-800 relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+          class="dark:text-gray-300 dark:bg-gray-800 inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
         >
           <svg
             class="h-5 w-5"
@@ -66,13 +63,13 @@
           </svg>
         </a>
         <p
-          class="dark:text-gray-300 dark:bg-gray-800 relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
+          class="dark:text-gray-300 dark:bg-gray-800 inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
         >
           {{ pageNum }}
         </p>
         <a
           @click="incrementPageNumber"
-          class="dark:text-gray-300 dark:bg-gray-800 relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+          class="dark:text-gray-300 dark:bg-gray-800 inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
         >
           <svg
             class="h-5 w-5"

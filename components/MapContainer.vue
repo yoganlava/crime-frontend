@@ -493,6 +493,7 @@ export default class MapContainer extends Vue {
 
 .fullscreen {
   position: absolute !important;
+  z-index: 2;
   top: 0px;
   right: 0px;
   bottom: 0px;

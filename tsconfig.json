@@ -24,10 +24,8 @@
     },
     "types": [
       "@nuxt/types",
-      "@nuxtjs/axios",
       "@types/node",
       "nuxt-leaflet",
-      "jest"
     ]
   },
   "exclude": [

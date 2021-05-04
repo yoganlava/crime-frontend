@@ -47,7 +47,7 @@
           class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start"
         >
           <div class="flex-shrink-0 flex items-center">
-            <h1 class="nav-title">Crime</h1>
+            <h1 class="nav-title">Crime Spotter</h1>
           </div>
           <div class="hidden sm:ml-6 sm:block">
             <div class="flex space-x-4">
