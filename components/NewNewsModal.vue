@@ -63,14 +63,23 @@ export default class NewNewsModal extends Vue {
   active: boolean = false;
   location: string = "";
 
+  /**
+   * Set up listeners
+   */
   mounted() {
     this.$root.$on("toggleNewsModal", this.toggleModal);
   }
 
+  /**
+   * toggle active boolean
+   */
   toggleModal() {
     this.active = !this.active;
   }
 
+  /**
+   * Close the modal and emit the addCityNewsFeed event
+   */
   addCity() {
     this.toggleModal();
     this.$root.$emit("addCityNewsFeed", this.location);

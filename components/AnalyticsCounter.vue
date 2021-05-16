@@ -21,11 +21,15 @@
 import { Vue, Component, Prop } from "nuxt-property-decorator";
 @Component
 export default class AnalyticsCounter extends Vue {
+  // Title of the counter
   @Prop() title: string;
+  // url of the statistics
   @Prop() url: string;
+  // analytics count
   count: number = 0;
 
   async mounted() {
+    // set the count to the retrieved count from api
     this.count = (await this.$http.$get(this.url)).count;
   }
 }

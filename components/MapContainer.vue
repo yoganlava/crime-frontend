@@ -2,7 +2,6 @@
   <div class="map-container" :class="{ fullscreen: fullscreen }">
     <client-only>
       <div v-show="false" id="invisible-chart"></div>
-      <!-- <polygon-analysis ref="chart"></polygon-analysis> -->
       <l-map ref="map" :zoom="14">
         <l-tile-layer
           url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
@@ -30,29 +29,36 @@ interface MarkerClusterGroup extends L.LayerGroup {}
 
 @Component
 export default class MapContainer extends Vue {
+  // IP of user
   @Prop() ip: string;
+  // Current polygon
   lastLayer: L.Polygon | L.Rectangle;
+  // Crime Markers
   crimeGroup: MarkerClusterGroup;
+  // Current crimes loaded
   crimeObjects: Array<any>;
+  // Police Station markers
   stationGroup: L.LayerGroup;
   fullscreen: boolean = false;
   darkMode: boolean = false;
-  html;
 
   $refs!: {
     map: LMap;
     chart: any;
   };
-
-  created() {}
-
-  // Set up map after mounted
+  /**
+   * Get location of IP and pan to location
+   * Also do some initialisation
+   */
   async mounted() {
+    // Get gelocation of IP
     let geoInfo = await this.$http.$get(`/external/ip/${this.ip}`);
     this.crimeGroup = this.$L.markerClusterGroup().addTo(this.getMap());
     this.stationGroup = this.$L.layerGroup().addTo(this.getMap());
+    // pan to geolocation
     this.panMapTo([geoInfo.lat, geoInfo.lon]);
     this.initialiseToolbar();
+    // set up listeners
     this.getMap().on("pm:create", this.resolveCrimes);
     this.$root.$on("goToAddress", (coords) => {
       this.goToAddress(coords);
@@ -61,18 +67,21 @@ export default class MapContainer extends Vue {
       this.darkMode = darkMode;
     });
   }
-
-  // Resolves all crimes when a polygon has been created while deleting the old polygons
-  async resolveCrimes(e) {
+  /**
+   * Get all crimes in an area and display it on the map
+   * @param {LeafletEvent} e
+   */
+  async resolveCrimes(e: L.LeafletEvent) {
     this.replaceLastLayer(e.layer);
-    console.log(this.calculatePolygonArea(this.getLastPolygonCoords()));
-    // Limit polygon area to 500000 (arbitrary number found from minimal testing)
-    if (this.calculatePolygonArea(this.getLastPolygonCoords()) > 500000) {
+    // Limit polygon area to 280000000 (arbitrary number found from minimal testing)
+    if (this.calculatePolygonArea(this.getCurrentPolygonCoords()) > 280000000) {
+      // Show error toast
       this.$toast.show({
         type: "danger",
         title: "Error",
         message: "Area too big",
       });
+      // Clear the markers
       this.crimeGroup.clearLayers();
       this.stationGroup.clearLayers();
       return;
@@ -82,18 +91,22 @@ export default class MapContainer extends Vue {
     this.analyseLastLayer();
   }
 
+  // Wait for next vue tick
   waitForNextTick = (vm) =>
     new Promise<void>((resolve) => vm.$nextTick(() => resolve()));
 
+  /**
+   * Create analysis popup when clicking on polygon
+   */
   async analyseLastLayer() {
     var crimeMap = {};
-    // ! Probably change this to use crime objects
     this.crimeGroup.getLayers().forEach((crimeMarker: any) => {
       crimeMap[crimeMarker.options.title] = crimeMap[crimeMarker.options.title]
         ? crimeMap[crimeMarker.options.title] + 1
         : 1;
     });
-    // ! Really ugly but basically only way I could think of
+    // Once the polygon has been clicked, initialise the book mark,
+    // and replace the listener to a simple popup
     this.lastLayer.once("click", () => {
       let canvas = document.createElement("canvas");
       canvas.style.width = "400px";
@@ -108,8 +121,6 @@ export default class MapContainer extends Vue {
           Math.floor(Math.random() * 256),
           Math.floor(Math.random() * 256),
         ]);
-      console.log(colors);
-
       new Chart(canvas, {
         type: "bar",
         data: {
@@ -157,6 +168,9 @@ export default class MapContainer extends Vue {
     });
   }
 
+  /**
+   * Initialise the toolbar that appears on the left of the map
+   */
   initialiseToolbar() {
     this.getMap().pm.addControls({
       position: "topleft",
@@ -169,6 +183,7 @@ export default class MapContainer extends Vue {
       editMode: false,
       oneBlock: true,
     });
+    // Create fullscreen button
     this.getMap().pm.Toolbar.createCustomControl({
       name: "fullscreen",
       title: "Fullscreen",
@@ -181,11 +196,11 @@ export default class MapContainer extends Vue {
       block: "options",
       toggle: false,
     });
+    // Create the filter button
     this.getMap().pm.Toolbar.createCustomControl({
       name: "filter",
       title: "Filter By",
       className: "icon-filter",
-      // Very inefficient but cba
       actions: [
         {
           text: "All",
@@ -250,7 +265,7 @@ export default class MapContainer extends Vue {
       ],
       block: "options",
     });
-
+    // Create dark mode
     this.getMap().pm.Toolbar.createCustomControl({
       name: "darkMode",
       title: "Dark mode",
@@ -263,7 +278,12 @@ export default class MapContainer extends Vue {
     });
   }
 
-  filterMarkers(category) {
+  /**
+   * Filter markers by type
+   * @param {string} category
+   */
+  filterMarkers(category: string) {
+    // clear markers
     this.crimeGroup.clearLayers();
     category == "all"
       ? this.crimeObjects.forEach(this.markCrime)
@@ -272,53 +292,63 @@ export default class MapContainer extends Vue {
           .forEach(this.markCrime);
   }
 
-  // Sends polygon to crime api and marks all the crimes recieved on the map
+  /**
+   * Clears current markers and then populates with crime within the new polygon
+   */
   async markCrimesInLastLayer() {
     this.crimeGroup.clearLayers();
     let crimes: Array<any> = await this.$http.$get(
-      `/api/crime/crime?poly=${this.getLastPolygonCoords().join(":")}`
+      `/api/crime/crime?poly=${this.getCurrentPolygonCoords().join(":")}`
     );
     this.crimeObjects = crimes;
     crimes.forEach(this.markCrime);
   }
 
+  /**
+   * Mark crime at a point
+   * @param {json} crime
+   */
   markCrime(crime) {
-    {
-      let text =
-        `
+    let text =
+      `
         <b>Crime Type:</b> ${crime.category
           .split("-")
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
           .join(" ")}<br>
         <b>Date:</b> ${crime.crime_date}<br>
-        <b>Street:</b> ${crime.street}<br>
+        <b>Location:</b> ${crime.street}<br>
         <b>Outcome:</b> ${
           crime.outcome_status == null ? "Not resolved" : crime.outcome_status
         }
         <br>` +
-        (crime.outcome_status == null
-          ? ""
-          : `<b>Outcome Date:</b> ${crime.outcome_date}`);
-      // Hacky way to extract text for TTS
-      let dummy = document.createElement("div");
-      dummy.innerHTML = `<div>${text}</div>`;
-
-      text =
-        `<button onclick="speak(\`${dummy.innerText}\`)" class="bg-grey-dark hover:bg-grey text-grey-darkest font-bold py-1 px-1 rounded inline-flex items-center">
+      (crime.outcome_status == null
+        ? ""
+        : `<b>Outcome Date:</b> ${crime.outcome_date}`);
+    // Hacky way to extract text for TTS
+    let dummy = document.createElement("div");
+    dummy.innerHTML = `<div>${text}</div>`;
+    // Add TTS button
+    text =
+      `<button onclick="speak(\`${dummy.innerText}\`)" class="bg-grey-dark hover:bg-grey text-grey-darkest font-bold py-1 px-1 rounded inline-flex items-center">
           <i class="icon-volume"></i>
         </button><br>` + text;
-      this.addMarker(
-        [crime.latitude, crime.longitude],
-        text,
-        crime.category,
-        this.crimeGroup
-      );
-    }
+    // Add marker to map
+    this.addMarker(
+      [crime.latitude, crime.longitude],
+      text,
+      crime.category,
+      this.crimeGroup
+    );
   }
 
+  /**
+   * Clear current police stations and load nearest police stations to polygon
+   */
   async loadPoliceStations() {
     this.stationGroup.clearLayers();
-    let centroid = this.getPolygonCentroid(this.getLastPolygonCoords()),
+    // Get center of polygon
+    let centroid = this.getPolygonCentroid(this.getCurrentPolygonCoords()),
+      //Get police stations closest to center of the polygon
       nearestStations = await this.$http.$get(
         `https://www.met.police.uk/api/v1/en-GB/policestationresults/getnearestpolicestationresults/json?lat=${
           centroid[0]
@@ -326,6 +356,7 @@ export default class MapContainer extends Vue {
           Date.now() / 1000
         )}`
       );
+    // Add all police stations as markers
     nearestStations.forEach((station) => {
       this.addMarker(
         [station.latitude, station.longitude],
@@ -343,16 +374,19 @@ export default class MapContainer extends Vue {
       );
     });
   }
-
-  // Create circular polygon with 10 points and then place it on the map
-  createCircularPolygon(center, radius = 100) {
+  /**
+   * Create a circular polygon at a point
+   * @param {number} center
+   * @param {number} radius
+   */
+  createCircularPolygon(center: Array<number>, radius: number = 100) {
     var unproject = this.getMap().layerPointToLatLng.bind(this.getMap()),
       projectedCentroid = this.getMap().latLngToLayerPoint.bind(this.getMap())(
         center
       ),
       angle = 0.0,
       points = [];
-
+    // Create 10 sided polygon
     for (var i = 0; i < 11; i++) {
       angle -= (Math.PI * 2) / 10;
       var point = new this.$L.Point(
@@ -365,21 +399,30 @@ export default class MapContainer extends Vue {
     this.lastLayer.addTo(this.getMap());
   }
 
-  // Replace last polygon with new polygon
+  /**
+   * Replace last polygon
+   * @param newLayer Polygon to replace with
+   */
   replaceLastLayer(newLayer) {
     if (this.lastLayer != undefined) this.getMap().removeLayer(this.lastLayer);
     this.lastLayer = newLayer;
   }
-
-  // Get the latlngs of the current polygon
-  getLastPolygonCoords() {
+  /**
+   * Get coords of current polygon
+   * @return {Array<Array<number>>}
+   */
+  getCurrentPolygonCoords() {
     return (this.lastLayer.getLatLngs()[0] as Array<{
       lat;
       lng;
     }>).map((latlng) => [latlng.lat, latlng.lng]);
   }
 
-  // Get center of polygon
+  /**
+   * Get center of polygon
+   * @param {Array<Array<number>>} points
+   * @return {Array<number>}
+   */
   getPolygonCentroid(points: Array<Array<number>>): Array<number> {
     var x = points.map((point) => point[0]),
       y = points.map((point) => point[1]),
@@ -391,22 +434,33 @@ export default class MapContainer extends Vue {
   // Map getter
   getMap = () => this.$refs.map.mapObject;
 
-  // Pan to coords specified and mark crimes in a circular area around the coords
-  async goToAddress(coords) {
+  /**
+   * Pan to coords and mark crimes in the area
+   * @param {Array<number>} coords
+   */
+  async goToAddress(coords: Array<number>) {
     this.panMapTo(coords);
     this.createCircularPolygon(coords);
     await this.markCrimesInLastLayer();
     await this.loadPoliceStations();
     this.analyseLastLayer();
   }
-
-  // Pan map to set coords
+  /**
+   * Pan map to supplied coords
+   * @param {Array<number>} coords
+   */
   panMapTo(coords) {
     this.getMap().panTo(coords);
   }
 
-  // Add marker at specified coord with html text
-  addMarker(coords, text, type, group) {
+  /**
+   * Add crime market to a location
+   * @param {Array<number>} coords
+   * @param {string} text
+   * @param {string} type
+   * @param group
+   */
+  addMarker(coords, text: string, type: string, group) {
     this.$L
       .marker(coords, {
         title: type,
@@ -421,6 +475,10 @@ export default class MapContainer extends Vue {
       .addTo(group);
   }
 
+  /**
+   * Calculate rough polygon area
+   * @param {Array<Array<number>>} points
+   */
   calculatePolygonArea(points) {
     let area = 0;
     let lowerIndex;
@@ -442,12 +500,10 @@ export default class MapContainer extends Vue {
         upperIndex = i + 2;
       }
 
-      const p1lon = points[lowerIndex][1];
-      const p2lat = points[middleIndex][0];
-      const p3lon = points[upperIndex][1];
       area +=
-        (p3lon / Math.PI / 180 - p1lon / Math.PI / 180) *
-        Math.sin(p2lat / Math.PI / 180);
+        ((points[upperIndex][1] * Math.PI) / 180 -
+          (points[lowerIndex][1] * Math.PI) / 180) *
+        Math.sin((points[middleIndex][0] * Math.PI) / 180);
     }
     area *= (6378137 * 6378137) / 2;
 

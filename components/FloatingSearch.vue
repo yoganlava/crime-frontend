@@ -9,11 +9,17 @@ import { Vue, Component } from "nuxt-property-decorator";
 
 @Component
 export default class FloatingSearch extends Vue {
-  // Get geo location of specified query and emit goToAddress message
-  async search(address) {
+  /**
+   * Get geo location of specified address and emit goToAddress message
+   * @param {string} address
+   */
+  async search(address: string) {
+    // Get latitude and longitude of the address from the api
     let geocode = await this.$http.$get(
       `/api/geocode/forward?q=${address.replaceAll(" ", "+")}`
     );
+    // if there is an error
+    // toast the error
     if (geocode.error) {
       this.$toast.show({
         type: "danger",
@@ -23,6 +29,7 @@ export default class FloatingSearch extends Vue {
       return;
     }
     geocode = geocode[0];
+    // emit the goToAddress
     this.$root.$emit("goToAddress", [geocode.center[1], geocode.center[0]]);
   }
 }

@@ -2,7 +2,7 @@
   <div>
     <div class="flex justify-center flex-wrap">
       <analytics-counter
-        :title="'Daily Searches'"
+        :title="'Total Searches'"
         :url="'/api/statistics/get_search_count'"
       ></analytics-counter>
       <div class="break"></div>

@@ -9,7 +9,6 @@
       >
         {{ cityName }}
       </h1>
-      <!-- TODO Make last {{ X }} months more robust -->
       <p class="pt-4">
         Amount of crimes in the last {{ datasets[0].data.length }} months:
         <b>{{ totalCrimeCount() }}</b>
@@ -71,30 +70,40 @@ export default class CrimeAnalysis extends Vue {
   errorMessage: string = "";
 
   async mounted() {
+    // Set up listener
     this.$root.$on("searchCityStatistics", this.searchCityStatistics);
+    // Search analytics for default cities
     await this.searchCityStatistics(this.default);
   }
 
+  /**
+   * Searches statistics on a given city name
+   * @param {string} cityName
+   */
   async searchCityStatistics(cityName: string) {
-    // this.loading = true;
+    // show loading bar
     this.state = LoadingState.LOADING;
     this.cityName = cityName;
     this.datasets = [];
     this.months = new Set();
+    // get list of crimes in city
     let crimesList: Crime[] = await this.$http.$get(
       "/api/statistics/city?name=" + cityName
     );
-
+    // if api returns error instead of list
+    // show the error
     if ((crimesList as any).error) {
       this.state = LoadingState.ERROR;
       this.errorMessage = (crimesList as any).error;
       return;
     }
-
+    // reverse array so its oldest to newest when
+    // shown on the graph
     crimesList = crimesList.reverse();
-
+    // create set to make crime names unique
     let crimeNames: Set<string> = new Set();
-
+    // if array is empty
+    // show an error
     if (crimesList.length == 0) {
       this.state = LoadingState.ERROR;
       this.errorMessage =
@@ -102,11 +111,14 @@ export default class CrimeAnalysis extends Vue {
       return;
     }
 
+    // add the crimes month and name into the
+    // months and names array
     crimesList.forEach((crime) => {
       this.months.add(crime.month);
       crimeNames.add(crime.name);
     });
-
+    // for each crime type, add them to the bar chart dataset
+    // Make sure to make random colours for each type aswell
     crimeNames.forEach((name) => {
       let r = Math.floor(Math.random() * 256),
         g = Math.floor(Math.random() * 256),
@@ -120,10 +132,14 @@ export default class CrimeAnalysis extends Vue {
           .map((crime) => crime.value),
       });
     });
-
+    // Remove loading animation
     this.state = LoadingState.COMPLETE;
   }
 
+  /**
+   * Tallies up the crimes and returns the total number of crimes
+   * @returns {Number}
+   */
   totalCrimeCount() {
     return this.datasets.reduce((_, curr) => {
       return _ + curr.data.reduce((a, b) => a + b, 0);

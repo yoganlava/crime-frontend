@@ -55,41 +55,68 @@ import { Vue, Component, Prop } from "nuxt-property-decorator";
 
 @Component
 export default class FloatingSearch extends Vue {
+  // Function to call when searching
   @Prop() onClick: (address) => void;
+  // search query
   address: string = "";
+  // array of suggestions under box
   suggestions = [];
 
+  /**
+   * auto complete the suggestion
+   */
   async autocomplete() {
+    // get all suggestions from the autocomplete api
     let res = await this.$http.$get(
       `/api/autocomplete?q=${this.address.replaceAll(" ", "+")}`
     );
     this.suggestions = res.items;
   }
 
-  highlightSuggestionTitle(suggestion) {
-    let string = suggestion.address.label;
+  /**
+   * highlights a suggestion by bolding the relevant parts
+   * @param {json} suggestion
+   * @returns {string} returns highlighted text
+   */
+  highlightSuggestionTitle(suggestion): string {
+    let highlightedText = suggestion.address.label;
     for (let highlight of suggestion.highlights.address.label) {
-      string = this.insertInto(
-        this.insertInto(string, highlight.start, "<b>"),
+      highlightedText = this.insertInto(
+        this.insertInto(highlightedText, highlight.start, "<b>"),
         highlight.end + 3,
         "</b>"
       );
     }
-    return string;
+    return highlightedText;
   }
 
+  /**
+   * Clear suggestions before calling onClick function
+   */
   onClickClear() {
     this.suggestions = [];
     this.onClick(this.address);
     this.address = "";
   }
 
+  /**
+   * Triggered when clicking on suggestion
+   * clears suggestions and searches
+   * @param {json} suggestion
+   */
   onSuggestionClick(suggestion) {
     this.address = suggestion.address.label;
     this.onClick(this.address);
     this.suggestions = [];
   }
 
+  /**
+   * Insert string into string
+   * @param {string} string
+   * @param {number} index
+   * @param {value} value
+   * @returns {string}
+   */
   insertInto(string: string, index: number, value: string) {
     return string.substr(0, index) + value + string.substr(index);
   }

@@ -18,8 +18,11 @@ import { Vue, Component, Prop } from "nuxt-property-decorator";
 
 @Component
 export default class NewsArticle extends Vue {
+  // Title of the article
   @Prop() title: string;
+  // Description of the article
   @Prop() description: string;
+  // Article url
   @Prop() url: string;
 }
 </script>

@@ -106,33 +106,50 @@ interface NewsArticle {
   },
 })
 export default class NewsTable extends Vue {
+  // Location of news
   @Prop() location: string;
+  // News source
   @Prop() source: string;
+  // Page number
   @Prop() index: number;
   currentNews: Array<NewsArticle> = [];
+  // current news page num
   pageNum: number = 1;
+  // number of articles per page
   limit: number = 4;
   channel: Actioncable.Channel;
   cable: Actioncable.Cable;
 
+  /**
+   * Watch source property for any changes
+   * if there are any changes, request the new news source and update articles
+   */
   @Watch("source")
   changeSource() {
+    // clear news
     this.currentNews = [];
+    // update news
     this.channel.perform("request_update", {
       location: this.location,
       source: this.source,
     });
   }
 
+  /**
+   * create a connection and request updates every 50000ms
+   */
   mounted() {
+    // connect to the action cable server
     let { cable, channel } = this.$createConnection(this.parseMessage);
     (this.cable = cable), (this.channel = channel);
+    // wait two seconds before requesting for update,
+    // so we can connect and subscribe
     setTimeout(() => {
       this.channel.perform("request_update", {
         location: this.location,
         source: this.source,
       });
-
+      // set interval to request update every 50000ms
       setInterval(() => {
         this.channel.perform("request_update", {
           location: this.location,
@@ -142,24 +159,48 @@ export default class NewsTable extends Vue {
     }, 2000);
   }
 
+  /**
+   * update news with any new news from actioncable server
+   * @param {json[]} data
+   */
   parseMessage(data) {
+    // if there is no news in the table currently, just set the current news as the new news
     if (!this.currentNews.length) {
       this.currentNews = data;
       return;
     }
+    // add any new news to the current news
     this.currentNews.unshift(...this.getDifference(data, this.currentNews));
     this.$forceUpdate();
   }
 
+  /**
+   * Gets the difference between two arrays
+   * @param {Array<NewsArticle>} arr1
+   * @param {Array<NewsArticle>} arr2
+   * @returns {Array<NewsArticle>}
+   */
   getDifference(arr1: Array<NewsArticle>, arr2: Array<NewsArticle>) {
     return arr1.filter((o) => this.indexOfObject(arr2, o) == -1);
   }
 
+  /**
+   * @description
+   * @param {Array<NewsArticle>} arr
+   * @param {Array<NewsArticle>} object: NewsArticle
+   * @returns {Number}
+   */
   indexOfObject(arr: Array<NewsArticle>, object: NewsArticle) {
     for (let i in arr) if (this.isNewsObjectEqual(arr[i], object)) return i;
     return -1;
   }
 
+  /**
+   * Simple check of equality of two articles
+   * @param {NewsArticle} o1
+   * @param {NewsArticle} o2
+   * @returns {boolean}
+   */
   isNewsObjectEqual(o1: NewsArticle, o2: NewsArticle) {
     return (
       o1.title === o2.title &&
@@ -168,14 +209,24 @@ export default class NewsTable extends Vue {
     );
   }
 
+  /**
+   * Increment news page
+   */
   incrementPageNumber() {
     if (this.pageNum * this.limit < this.currentNews.length) this.pageNum++;
   }
 
+  /**
+   * Decrement news page
+   */
   decrementPageNumber() {
     if (this.pageNum > 1) this.pageNum--;
   }
 
+  /**
+   * Returns paginated slice of current news
+   * @returns {Array<NewsArticles>}
+   */
   paginatedNews() {
     return this.currentNews.slice(
       (this.pageNum - 1) * this.limit,
@@ -183,10 +234,15 @@ export default class NewsTable extends Vue {
     );
   }
 
+  /**
+   * Destructor for table
+   */
   deleteTable() {
-    // Destructor Stuff
+    // Emit deleteNewsTableEvent
     this.$root.$emit("deleteNewsTable", this.index);
+    // Disconnect from action cable server
     this.cable.disconnect();
+    // Destroy component
     this.$destroy();
   }
 }

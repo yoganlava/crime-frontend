@@ -63,7 +63,7 @@ h2 {
 
 // TODO Better Centering
 .loader {
-  display:block;
+  display: block;
   width: 100%;
 
   // margin: 0;
@@ -72,10 +72,9 @@ h2 {
   // position: absolute;
   // left: calc(20%);
   // top: calc(50% - 56px);
-  justify-content:  center;
+  justify-content: center;
   padding-left: 30%;
   padding-right: 30%;
-
 }
 
 .bars {
@@ -89,7 +88,7 @@ h2 {
   // padding-left: 37%;
   justify-content: center;
   text-align: center;
-  align-items:center;
+  align-items: center;
 }
 
 .loader1 {
